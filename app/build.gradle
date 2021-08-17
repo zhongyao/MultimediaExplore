@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.hongri.multimedia"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -36,4 +36,6 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.hjq:xxpermissions:9.8'
 }
