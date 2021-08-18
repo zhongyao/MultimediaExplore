@@ -28,6 +28,7 @@ public class RecordLayout extends FrameLayout {
     private int borderWidth;
     private RecordButton recordBtn;
     private ImageView deleteBtn;
+    private final long RECORD_BORDER_TIME = 1000;
 
     private final String TAG = "RecordLayout";
 
@@ -86,6 +87,7 @@ public class RecordLayout extends FrameLayout {
     private float currentX = 0;
     private float currentY = 0;
     private float distanceX = 0;
+    private long startTime, endTime;
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
@@ -96,18 +98,19 @@ public class RecordLayout extends FrameLayout {
         }
 
 
-
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                startTime = System.currentTimeMillis();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
 
                 lastRawX = event.getRawX();
                 lastRawY = event.getRawY();
 
-                if (isPointInRecordRect(lastTouchX, lastTouchY)) {
+                if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioStatusManager.getStatus() != Status.STATUS_START) {
                     recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
+                    AudioStatusManager.setStatus(Status.STATUS_START);
                 }
                 Log.d(TAG, "lastTouchX:" + lastTouchX + " lastTouchY:" + lastTouchY + " lastRawX:" + lastRawX + " lastRawY:" + lastRawY);
                 break;
@@ -124,13 +127,23 @@ public class RecordLayout extends FrameLayout {
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (currentX > borderWidth && distanceX > (borderWidth / 4.0)) {
-                    Log.d(TAG, "trigger cancel");
-                    AudioStatusManager.setStatus(Status.STATUS_CANCEL);
-                }
+                endTime = System.currentTimeMillis();
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if ((currentX > borderWidth && distanceX > (borderWidth / 4.0)) || (endTime - startTime < RECORD_BORDER_TIME)) {
+                            Log.d(TAG, "trigger record cancel");
+                            AudioStatusManager.setStatus(Status.STATUS_CANCEL);
+                        } else {
+                            Log.d(TAG, "trigger record finish");
+                            AudioStatusManager.setStatus(Status.STATUS_STOP);
+                        }
 
-                recordBtn.setBackgroundResource(R.drawable.audio_record_normal_bg);
-                deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        recordBtn.setBackgroundResource(R.drawable.audio_record_normal_bg);
+                        deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    }
+                }, 300);
+
                 break;
 
             default:

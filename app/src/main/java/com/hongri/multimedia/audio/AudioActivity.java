@@ -3,6 +3,7 @@ package com.hongri.multimedia.audio;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,8 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hongri.multimedia.AppUtil;
 import com.hongri.multimedia.R;
+import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.audio.widget.RecordButton;
 import com.hongri.multimedia.audio.widget.RecordLayout;
 
@@ -62,15 +65,12 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
         recordLayout.setPhoneWidth(this, phoneWidth);
 
-        //音频初始化
-        String fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-
         XXPermissions.with(this).permission(PERMISSION_ALL).request(new OnPermissionCallback() {
             @Override
             public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     permissionGranted = true;
-                    AudioRecorder.getInstance().createDefaultAudio(fileName);
+                    AudioStatusManager.setStatus(Status.STATUS_READY);
                 }
 
             }
@@ -86,24 +86,21 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         int id = v.getId();
         switch (id) {
             case R.id.start:
-                AudioRecorder.getInstance().startRecord(new RecordStreamListener() {
-                    @Override
-                    public void recordOfByte(byte[] data, int begin, int end) {
-                        Log.d(TAG, "data:" + Arrays.toString(data) + " begin:" + begin + " end:" + end);
-                    }
-                });
+                AudioStatusManager.setStatus(Status.STATUS_START);
                 break;
+
             case R.id.pause:
-                AudioRecorder.getInstance().pauseRecord();
+                AudioStatusManager.setStatus(Status.STATUS_PAUSE);
                 break;
 
             case R.id.cancel:
-                AudioRecorder.getInstance().canel();
+                AudioStatusManager.setStatus(Status.STATUS_CANCEL);
                 break;
 
             case R.id.stop:
-                AudioRecorder.getInstance().stopRecord();
+                AudioStatusManager.setStatus(Status.STATUS_STOP);
                 break;
+
             case R.id.recordLayout:
 
                 break;
@@ -114,5 +111,11 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AudioStatusManager.setStatus(Status.STATUS_RELEASE);
     }
 }

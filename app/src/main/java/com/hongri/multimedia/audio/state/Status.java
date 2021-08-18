@@ -16,5 +16,7 @@ public enum Status {
     //停止
     STATUS_STOP,
     //取消
-    STATUS_CANCEL
+    STATUS_CANCEL,
+    //释放
+    STATUS_RELEASE
 }

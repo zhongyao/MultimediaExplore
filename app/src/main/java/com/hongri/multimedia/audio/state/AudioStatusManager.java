@@ -4,6 +4,10 @@ package com.hongri.multimedia.audio.state;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.AudioRecorder;
+import com.hongri.multimedia.util.DoubleClickUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Create by zhongyao on 2021/8/18
@@ -12,17 +16,22 @@ import com.hongri.multimedia.audio.AudioRecorder;
 public class AudioStatusManager {
 
     private static final String TAG = "AudioStatusManager";
-    private static Status currentStatus;
 
     public static void setStatus(Status curStatus) {
         Log.d(TAG, "curStatus:" + curStatus);
-        currentStatus = curStatus;
+
+//        if (DoubleClickUtil.isFastDoubleInvoke(0)) {
+//            Log.d(TAG, "change status is so fast...");
+//            return;
+//        }
         switch (curStatus) {
             case STATUS_NO_READY:
 
                 break;
 
             case STATUS_READY:
+                //音频初始化
+                AudioRecorder.getInstance().createDefaultAudio("");
                 break;
 
             case STATUS_START:
@@ -38,7 +47,11 @@ public class AudioStatusManager {
                 break;
 
             case STATUS_CANCEL:
-                AudioRecorder.getInstance().canel();
+                AudioRecorder.getInstance().cancel();
+                break;
+
+            case STATUS_RELEASE:
+                AudioRecorder.getInstance().releaseRecord();
                 break;
 
             default:
@@ -47,6 +60,6 @@ public class AudioStatusManager {
     }
 
     public static Status getStatus() {
-        return currentStatus;
+        return AudioRecorder.getInstance().getStatus();
     }
 }

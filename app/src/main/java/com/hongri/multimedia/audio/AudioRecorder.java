@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +22,7 @@ import java.util.List;
  * Description: 录音封装
  */
 public class AudioRecorder {
+    private static final String TAG = "AudioRecorder";
     //音频输入-麦克风
     private final static int AUDIO_INPUT = MediaRecorder.AudioSource.MIC;
     //采用频率
@@ -58,6 +61,8 @@ public class AudioRecorder {
     }
 
     private AudioRecorder() {
+        Log.d(TAG, "AudioRecorder");
+        createDefaultAudio("");
     }
 
     public static AudioRecorder getInstance() {
@@ -97,7 +102,10 @@ public class AudioRecorder {
      */
     public void startRecord(final RecordStreamListener listener) {
 
-        if (status == Status.STATUS_NO_READY || TextUtils.isEmpty(fileName)) {
+        if (TextUtils.isEmpty(fileName)) {
+            fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        }
+        if (status == Status.STATUS_NO_READY /*|| TextUtils.isEmpty(fileName)*/) {
             throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
         }
         if (status == Status.STATUS_START) {
@@ -137,15 +145,11 @@ public class AudioRecorder {
         } else {
             audioRecord.stop();
             status = Status.STATUS_STOP;
-            release();
+            saveRecordFile();
         }
     }
 
-    /**
-     * 释放资源
-     */
-    public void release() {
-        Log.d("AudioRecorder", "===release===");
+    public void saveRecordFile() {
         //假如有暂停录音
         try {
             if (filesName.size() > 0) {
@@ -168,27 +172,31 @@ public class AudioRecorder {
         } catch (IllegalStateException e) {
             throw new IllegalStateException(e.getMessage());
         }
+    }
 
+    /**
+     * 销毁(释放)录音实例
+     */
+    public void releaseRecord() {
         if (audioRecord != null) {
             audioRecord.release();
             audioRecord = null;
         }
-
         status = Status.STATUS_NO_READY;
     }
 
     /**
      * 取消录音
      */
-    public void canel() {
-        filesName.clear();
-        fileName = null;
-        if (audioRecord != null) {
-            audioRecord.release();
-            audioRecord = null;
-        }
+    public void cancel() {
+//        filesName.clear();
+//        fileName = null;
+//        if (audioRecord != null) {
+//            audioRecord.release();
+//            audioRecord = null;
+//        }
 
-        status = Status.STATUS_NO_READY;
+        status = Status.STATUS_CANCEL;
     }
 
 
@@ -226,6 +234,9 @@ public class AudioRecorder {
         //将录音状态设置成正在录音状态
         status = Status.STATUS_START;
         while (status == Status.STATUS_START) {
+            if (audioRecord == null) {
+                return;
+            }
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
             if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
                 try {
@@ -264,7 +275,7 @@ public class AudioRecorder {
                     Log.e("AudioRecorder", "mergePCMFilesToWAVFile fail");
                     throw new IllegalStateException("mergePCMFilesToWAVFile fail");
                 }
-                fileName = null;
+                fileName = "";
             }
         }).start();
     }
@@ -283,7 +294,7 @@ public class AudioRecorder {
                     Log.e("AudioRecorder", "makePCMFileToWAVFile fail");
                     throw new IllegalStateException("makePCMFileToWAVFile fail");
                 }
-                fileName = null;
+                fileName = "";
             }
         }).start();
     }
