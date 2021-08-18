@@ -51,4 +51,41 @@
         android:text="cancel"
         android:textStyle="bold" />
 
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/audio_record_bg"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/teal_200" />
+
+    <com.hongri.multimedia.audio.widget.RecordLayout
+        android:id="@+id/recordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="visible">
+
+        <com.hongri.multimedia.audio.widget.RecordButton
+            android:id="@+id/recordBtn"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="@drawable/audio_record_normal_bg" />
+
+        <ImageView
+            android:id="@+id/deleteBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="20dp"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:src="@drawable/audio_record_delete"
+            tools:ignore="RtlHardcoded" />
+
+    </com.hongri.multimedia.audio.widget.RecordLayout>
+
 </LinearLayout>

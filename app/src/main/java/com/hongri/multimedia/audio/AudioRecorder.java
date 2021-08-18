@@ -6,6 +6,8 @@ import android.media.MediaRecorder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.hongri.multimedia.audio.state.Status;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -302,22 +304,6 @@ public class AudioRecorder {
      */
     public int getPcmFilesCount() {
         return filesName.size();
-    }
-
-    /**
-     * 录音对象的状态
-     */
-    public enum Status {
-        //未开始
-        STATUS_NO_READY,
-        //预备
-        STATUS_READY,
-        //录音
-        STATUS_START,
-        //暂停
-        STATUS_PAUSE,
-        //停止
-        STATUS_STOP
     }
 
 }

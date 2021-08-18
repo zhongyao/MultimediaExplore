@@ -11,7 +11,10 @@ import android.widget.Toast;
 
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
+import com.hongri.multimedia.AppUtil;
 import com.hongri.multimedia.R;
+import com.hongri.multimedia.audio.widget.RecordButton;
+import com.hongri.multimedia.audio.widget.RecordLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -26,7 +29,10 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
     private final String TAG = "AudioActivity";
     private Button start, pause, cancel, stop;
+    private RecordLayout recordLayout;
+    private RecordButton recordBtn;
     private boolean permissionGranted = false;
+    private int phoneWidth;
     private static String[] PERMISSION_ALL = {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -38,15 +44,23 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
 
+        phoneWidth = AppUtil.getPhoneWidth(this);
+
         start = findViewById(R.id.start);
         pause = findViewById(R.id.pause);
         cancel = findViewById(R.id.cancel);
         stop = findViewById(R.id.stop);
+        recordLayout = findViewById(R.id.recordLayout);
+        recordBtn = findViewById(R.id.recordBtn);
 
         start.setOnClickListener(this);
         pause.setOnClickListener(this);
         cancel.setOnClickListener(this);
         stop.setOnClickListener(this);
+        recordLayout.setOnClickListener(this);
+        recordBtn.setOnClickListener(this);
+
+        recordLayout.setPhoneWidth(this, phoneWidth);
 
         //音频初始化
         String fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
@@ -89,6 +103,12 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
             case R.id.stop:
                 AudioRecorder.getInstance().stopRecord();
+                break;
+            case R.id.recordLayout:
+
+                break;
+            case R.id.recordBtn:
+
                 break;
 
             default:

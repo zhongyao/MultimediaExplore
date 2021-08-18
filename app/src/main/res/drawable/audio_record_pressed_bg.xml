@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:innerRadius="0dp"
+    android:shape="ring"
+    android:thickness="100dp"
+    android:useLevel="false">
+    <!--android:useLevel="false"需要有，否则shape不展示-->
+    <solid android:color="@color/audio_record_selector_pressed_color" />
+</shape>
