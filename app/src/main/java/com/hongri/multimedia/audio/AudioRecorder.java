@@ -112,11 +112,11 @@ public class AudioRecorder {
             throw new IllegalStateException("正在录音");
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
-        audioRecord.startRecording();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                audioRecord.startRecording();
                 writeDataTOFile(listener);
             }
         }).start();
@@ -243,7 +243,7 @@ public class AudioRecorder {
                     fos.write(audiodata);
                     if (listener != null) {
                         //用于拓展业务
-                        listener.recordOfByte(audiodata, 0, audiodata.length);
+                        listener.recordOfByte(audiodata, 0, readsize);
                     }
                 } catch (IOException e) {
                     Log.e("AudioRecorder", e.getMessage());

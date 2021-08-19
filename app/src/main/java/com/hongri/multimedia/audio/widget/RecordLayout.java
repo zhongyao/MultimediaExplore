@@ -14,14 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hongri.multimedia.R;
+import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.util.DataUtil;
 
 /**
  * Create by zhongyao on 2021/8/17
  * Description:录音布局类
  */
-public class RecordLayout extends FrameLayout {
+public class RecordLayout extends FrameLayout implements RecordStreamListener {
 
     private Activity activity;
     private int phoneWidth;
@@ -29,6 +31,7 @@ public class RecordLayout extends FrameLayout {
     private RecordButton recordBtn;
     private ImageView deleteBtn;
     private final long RECORD_BORDER_TIME = 1000;
+    final Object mLock = new Object();
 
     private final String TAG = "RecordLayout";
 
@@ -110,7 +113,7 @@ public class RecordLayout extends FrameLayout {
 
                 if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioStatusManager.getStatus() != Status.STATUS_START) {
                     recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
-                    AudioStatusManager.setStatus(Status.STATUS_START);
+                    AudioStatusManager.setStatus(Status.STATUS_START, this);
                 }
                 Log.d(TAG, "lastTouchX:" + lastTouchX + " lastTouchY:" + lastTouchY + " lastRawX:" + lastRawX + " lastRawY:" + lastRawY);
                 break;
@@ -164,4 +167,19 @@ public class RecordLayout extends FrameLayout {
         }
         return true;
     }
+
+    @Override
+    public void recordOfByte(byte[] data, int begin, int end) {
+        double db = DataUtil.calculateVolumeByBytes(data);
+        Log.d(TAG, "db: " + db);
+
+//        synchronized (mLock) {
+//            try {
+//                mLock.wait(100); // 一秒十次
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
 }
