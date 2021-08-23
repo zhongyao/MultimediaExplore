@@ -170,8 +170,15 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
 
     @Override
     public void recordOfByte(byte[] data, int begin, int end) {
-        double db = DataUtil.calculateVolumeByBytes(data);
-        Log.d(TAG, "db: " + db);
+        double volume = DataUtil.calculateVolumeByBytes(data);
+        Log.d(TAG, "volume: " + volume);
+
+        post(new Runnable() {
+            @Override
+            public void run() {
+                recordBtn.updateLayout(recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 2, (recordBtnWidth / 2) + (float) volume);
+            }
+        });
 
 //        synchronized (mLock) {
 //            try {

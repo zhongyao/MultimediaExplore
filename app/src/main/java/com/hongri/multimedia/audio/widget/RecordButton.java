@@ -1,6 +1,9 @@
 package com.hongri.multimedia.audio.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -16,13 +19,36 @@ import androidx.appcompat.widget.AppCompatButton;
 public class RecordButton extends AppCompatButton {
 
     private final String TAG = "RecordButton";
+    private Paint paintInner;
+    private Paint paintOuter;
+    private float cx, cy;
+    private float innerRadius;
+    private float outerRadius;
 
     public RecordButton(@NonNull Context context) {
         super(context);
+        init(context);
     }
 
     public RecordButton(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        init(context);
+    }
+
+    private void init(Context context) {
+        paintInner = new Paint();
+        paintOuter = new Paint();
+        paintInner.setColor(Color.parseColor("#FF0000"));
+        paintOuter.setColor(Color.parseColor("#00FF00"));
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        canvas.drawCircle(cx, cy, outerRadius, paintOuter);
+        canvas.drawCircle(cx, cy, innerRadius, paintInner);
     }
 
     @Override
@@ -47,5 +73,13 @@ public class RecordButton extends AppCompatButton {
                 break;
         }
         return super.onTouchEvent(event);
+    }
+
+    public void updateLayout(float cx, float cy, float innerRadius, float outerRadius) {
+        this.cx = cx;
+        this.cy = cy;
+        this.innerRadius = innerRadius;
+        this.outerRadius = outerRadius;
+        invalidate();
     }
 }
