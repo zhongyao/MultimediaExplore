@@ -1,14 +1,18 @@
 package com.hongri.multimedia.audio.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +21,7 @@ import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.DataUtil;
+import com.hongri.multimedia.util.DateUtil;
 
 /**
  * Create by zhongyao on 2021/8/17
@@ -29,11 +34,12 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
     private int borderWidth;
     private RecordButton recordBtn;
     private ImageView deleteBtn;
+    private TextView timeTv;
     private final long RECORD_BORDER_TIME = 1000;
     final Object mLock = new Object();
     private boolean isPressed;
 
-    private final String TAG = "RecordLayout";
+    private static final String TAG = "RecordLayout";
 
     public RecordLayout(@NonNull Context context) {
         super(context);
@@ -57,7 +63,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int childCount = getChildCount();
-        if (childCount >= 2) {
+        if (childCount >= 3) {
             View childView1 = getChildAt(0);
             if (childView1 instanceof RecordButton) {
                 recordBtn = (RecordButton) childView1;
@@ -77,6 +83,11 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
             if (childView2 instanceof ImageView) {
                 deleteBtn = (ImageView) childView2;
             }
+
+            View childView3 = getChildAt(2);
+            if (childView3 instanceof TextView) {
+                timeTv = (TextView) childView3;
+            }
         }
     }
 
@@ -91,6 +102,30 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
     private float currentY = 0;
     private float distanceX = 0;
     private long startTime, endTime;
+    private static final int UPDATE_TIME = 0;
+    private long recordTime;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case UPDATE_TIME:
+                    Log.d(TAG, "UPDATE_TIME:");
+                    if (timeTv != null) {
+                        recordTime = 1000 + recordTime;
+                        timeTv.setText(DateUtil.generateTime(recordTime));
+                    }
+                    sendEmptyMessageDelayed(UPDATE_TIME, 1000);
+                    break;
+
+                default:
+
+                    break;
+            }
+        }
+    };
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
@@ -105,6 +140,9 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 isPressed = true;
+                if (handler != null) {
+                    handler.sendEmptyMessageDelayed(UPDATE_TIME, 1000);
+                }
                 startTime = System.currentTimeMillis();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
@@ -133,6 +171,9 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
 
             case MotionEvent.ACTION_UP:
                 isPressed = false;
+                handler.removeCallbacksAndMessages(null);
+                recordTime = 0;
+                timeTv.setText(DateUtil.generateTime(recordTime));
                 endTime = System.currentTimeMillis();
                 postDelayed(new Runnable() {
                     @Override
@@ -154,6 +195,9 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 isPressed = false;
+                handler.removeCallbacksAndMessages(null);
+                recordTime = 0;
+                timeTv.setText(DateUtil.generateTime(recordTime));
                 break;
 
             default:
