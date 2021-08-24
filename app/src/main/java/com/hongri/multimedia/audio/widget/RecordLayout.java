@@ -190,13 +190,14 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
             }
         });
 
-        synchronized (mLock) {
-            try {
-                mLock.wait(100); // 一秒十次
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        //TODO 此操作，会引起录音内容不全
+//        synchronized (mLock) {
+//            try {
+//                mLock.wait(100); // 一秒十次
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
 }
