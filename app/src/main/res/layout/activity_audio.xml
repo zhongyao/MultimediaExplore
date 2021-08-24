@@ -70,10 +70,10 @@
 
         <com.hongri.multimedia.audio.widget.RecordButton
             android:id="@+id/recordBtn"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
-            android:background="@drawable/audio_record_normal_bg" />
+            android:background="@drawable/audio_record_normal_bg"/>
 
         <ImageView
             android:id="@+id/deleteBtn"

@@ -22,8 +22,11 @@ public class RecordButton extends AppCompatButton {
     private Paint paintInner;
     private Paint paintOuter;
     private float cx, cy;
+    private boolean isSelected;
     private float innerRadius;
     private float outerRadius;
+    private final String COLOR_NORMAL = "#ff4ec899";
+    private final String COLOR_SELECTED = "#ff99dfc4";
 
     public RecordButton(@NonNull Context context) {
         super(context);
@@ -39,14 +42,15 @@ public class RecordButton extends AppCompatButton {
     private void init(Context context) {
         paintInner = new Paint();
         paintOuter = new Paint();
-        paintInner.setColor(Color.parseColor("#FF0000"));
-        paintOuter.setColor(Color.parseColor("#00FF00"));
+        paintInner.setColor(Color.parseColor(COLOR_NORMAL));
+        paintOuter.setColor(Color.parseColor(COLOR_SELECTED));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        Log.d(TAG, "innerRadius:" + innerRadius + " outerRadius:" + outerRadius);
         canvas.drawCircle(cx, cy, outerRadius, paintOuter);
         canvas.drawCircle(cx, cy, innerRadius, paintInner);
     }
@@ -75,7 +79,8 @@ public class RecordButton extends AppCompatButton {
         return super.onTouchEvent(event);
     }
 
-    public void updateLayout(float cx, float cy, float innerRadius, float outerRadius) {
+    public void updateLayout(boolean isSelected, float cx, float cy, float innerRadius, float outerRadius) {
+        this.isSelected = isSelected;
         this.cx = cx;
         this.cy = cy;
         this.innerRadius = innerRadius;

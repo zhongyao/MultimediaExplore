@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
@@ -32,6 +31,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
     private ImageView deleteBtn;
     private final long RECORD_BORDER_TIME = 1000;
     final Object mLock = new Object();
+    private boolean isPressed;
 
     private final String TAG = "RecordLayout";
 
@@ -104,6 +104,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                isPressed = true;
                 startTime = System.currentTimeMillis();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
@@ -112,7 +113,8 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                 lastRawY = event.getRawY();
 
                 if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioStatusManager.getStatus() != Status.STATUS_START) {
-                    recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
+                    recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
+//                    recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
                     AudioStatusManager.setStatus(Status.STATUS_START, this);
                 }
                 Log.d(TAG, "lastTouchX:" + lastTouchX + " lastTouchY:" + lastTouchY + " lastRawX:" + lastRawX + " lastRawY:" + lastRawY);
@@ -130,6 +132,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                 break;
 
             case MotionEvent.ACTION_UP:
+                isPressed = false;
                 endTime = System.currentTimeMillis();
                 postDelayed(new Runnable() {
                     @Override
@@ -142,11 +145,15 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                             AudioStatusManager.setStatus(Status.STATUS_STOP);
                         }
 
-                        recordBtn.setBackgroundResource(R.drawable.audio_record_normal_bg);
+                        recordBtn.updateLayout(false, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
+//                        recordBtn.setBackgroundResource(R.drawable.audio_record_normal_bg);
                         deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
-                }, 300);
+                }, 100);
 
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                isPressed = false;
                 break;
 
             default:
@@ -170,23 +177,26 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
 
     @Override
     public void recordOfByte(byte[] data, int begin, int end) {
+        if (!isPressed) {
+            return;
+        }
         double volume = DataUtil.calculateVolumeByBytes(data);
         Log.d(TAG, "volume: " + volume);
 
         post(new Runnable() {
             @Override
             public void run() {
-                recordBtn.updateLayout(recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 2, (recordBtnWidth / 2) + (float) volume);
+                recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, (recordBtnWidth / 3) + (float) volume * 3);
             }
         });
 
-//        synchronized (mLock) {
-//            try {
-//                mLock.wait(100); // 一秒十次
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        synchronized (mLock) {
+            try {
+                mLock.wait(100); // 一秒十次
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
