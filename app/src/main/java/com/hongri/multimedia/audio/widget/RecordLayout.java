@@ -173,7 +173,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                 isPressed = false;
                 handler.removeCallbacksAndMessages(null);
                 recordTime = 0;
-                timeTv.setText(DateUtil.generateTime(recordTime));
+                timeTv.setText("按住说话");
                 endTime = System.currentTimeMillis();
                 postDelayed(new Runnable() {
                     @Override
@@ -197,7 +197,7 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
                 isPressed = false;
                 handler.removeCallbacksAndMessages(null);
                 recordTime = 0;
-                timeTv.setText(DateUtil.generateTime(recordTime));
+                timeTv.setText("按住说话");
                 break;
 
             default:
