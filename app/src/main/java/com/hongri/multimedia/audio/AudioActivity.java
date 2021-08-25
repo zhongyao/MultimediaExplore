@@ -3,9 +3,7 @@ package com.hongri.multimedia.audio;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.media.AudioManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -17,11 +15,8 @@ import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.audio.widget.RecordButton;
-import com.hongri.multimedia.audio.widget.RecordLayout;
+import com.hongri.multimedia.audio.widget.RecordView;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +27,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
     private final String TAG = "AudioActivity";
     private Button start, pause, cancel, stop;
-    private RecordLayout recordLayout;
+    private RecordView recordView;
     private RecordButton recordBtn;
     private boolean permissionGranted = false;
     private int phoneWidth;
@@ -53,17 +48,17 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         pause = findViewById(R.id.pause);
         cancel = findViewById(R.id.cancel);
         stop = findViewById(R.id.stop);
-        recordLayout = findViewById(R.id.recordLayout);
+        recordView = findViewById(R.id.recordLayout);
         recordBtn = findViewById(R.id.recordBtn);
 
         start.setOnClickListener(this);
         pause.setOnClickListener(this);
         cancel.setOnClickListener(this);
         stop.setOnClickListener(this);
-        recordLayout.setOnClickListener(this);
+        recordView.setOnClickListener(this);
         recordBtn.setOnClickListener(this);
 
-        recordLayout.setPhoneWidth(this, phoneWidth);
+        recordView.setPhoneWidth(this, phoneWidth);
 
         XXPermissions.with(this).permission(PERMISSION_ALL).request(new OnPermissionCallback() {
             @Override

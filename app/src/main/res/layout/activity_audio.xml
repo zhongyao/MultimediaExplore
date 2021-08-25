@@ -19,50 +19,57 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/start"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="start"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <Button
-        android:id="@+id/pause"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="pause"
-        android:textStyle="bold" />
+        <Button
+            android:id="@+id/start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="start"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="stop"
-        android:textStyle="bold" />
+        <Button
+            android:id="@+id/pause"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="pause"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="cancel"
-        android:textStyle="bold" />
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="stop"
+            android:textStyle="bold" />
 
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/audio_record_bg"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="cancel"
+            android:textStyle="bold" />
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@drawable/audio_record_bg"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/teal_200" />
 
-    <com.hongri.multimedia.audio.widget.RecordLayout
+    <com.hongri.multimedia.audio.widget.RecordView
         android:id="@+id/recordLayout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -87,12 +94,51 @@
             tools:ignore="RtlHardcoded" />
 
         <TextView
-            android:id="@+id/timeTv"
+            android:id="@+id/recordTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="按住说话" />
-    </com.hongri.multimedia.audio.widget.RecordLayout>
+    </com.hongri.multimedia.audio.widget.RecordView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/teal_200" />
+
+    <com.hongri.multimedia.audio.widget.RecordPlayView
+        android:id="@+id/recordPlayView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:id="@+id/playAnimIv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:background="#ff0000" />
+
+        <com.hongri.multimedia.audio.widget.RecordProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="70dp"
+            android:background="@null"/>
+
+        <TextView
+            android:id="@+id/playTime"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical|right" />
+
+        <TextView
+            android:id="@+id/currentPlayTime"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal" />
+
+    </com.hongri.multimedia.audio.widget.RecordPlayView>
 
 </LinearLayout>

@@ -27,7 +27,7 @@ import com.hongri.multimedia.util.DateUtil;
  * Create by zhongyao on 2021/8/17
  * Description:录音布局类
  */
-public class RecordLayout extends FrameLayout implements RecordStreamListener {
+public class RecordView extends FrameLayout implements RecordStreamListener {
 
     private Activity activity;
     private int phoneWidth;
@@ -41,11 +41,11 @@ public class RecordLayout extends FrameLayout implements RecordStreamListener {
 
     private static final String TAG = "RecordLayout";
 
-    public RecordLayout(@NonNull Context context) {
+    public RecordView(@NonNull Context context) {
         super(context);
     }
 
-    public RecordLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public RecordView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
