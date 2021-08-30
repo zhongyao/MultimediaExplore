@@ -76,6 +76,15 @@ public class RecordPlayView extends FrameLayout {
             if (childView4 instanceof TextView) {
                 currentPlayTime = (TextView) childView4;
             }
+
+            if (progressBar != null && currentPlayTime != null) {
+                progressBar.setCurrentPlayTimeView(currentPlayTime);
+                progressBar.setRecordTime(30);
+            }
+
+            if (playTime != null) {
+                playTime.setText("30s");
+            }
         }
     }
 
@@ -91,10 +100,12 @@ public class RecordPlayView extends FrameLayout {
                 float stopX = event.getX();
                 float stopY = event.getY();
                 if (stopX > progressBarLeftX && stopX < progressBarRightX) {
+                    Log.d(TAG, "Touch事件传递至子View");
                     //不拦截事件，传递给子ProgressBar消费
                     return false;
+                } else {
+                    return true;
                 }
-                break;
             case MotionEvent.ACTION_UP:
 
                 break;

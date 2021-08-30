@@ -1,5 +1,6 @@
 package com.hongri.multimedia.audio.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +29,9 @@ public class RecordProgressBar extends AppCompatButton {
     private final String CIRCLE_COLOR = "#ff0000ff";
     private boolean isInit;
     private float startX, startY, stopX, stopY;
+    private TextView currentPlayTime;
+    private int recordTime;
+    private float width, height;
 
     public RecordProgressBar(@NonNull Context context) {
         super(context);
@@ -55,6 +60,15 @@ public class RecordProgressBar extends AppCompatButton {
     }
 
     @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        width = getWidth();
+        height = getHeight();
+        Log.d(TAG, "width:" + width + " height:" + height);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawLine(0, startY, getWidth(), stopY, linePaintBottom);
@@ -66,9 +80,10 @@ public class RecordProgressBar extends AppCompatButton {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "child--onTouchEvent---> event:" + event.getAction());
+//        Log.d(TAG, "child--onTouchEvent---> event:" + event.getAction());
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -76,6 +91,13 @@ public class RecordProgressBar extends AppCompatButton {
                 break;
             case MotionEvent.ACTION_MOVE:
                 float stopX = event.getX();
+
+                Log.d(TAG, "recordTime:" + recordTime + " width:" + width + " stopX:" + stopX);
+                float currentRecordTime = (recordTime / width) * stopX;
+                Log.d(TAG, "currentRecordTime:" + currentRecordTime);
+                if (currentPlayTime != null) {
+                    currentPlayTime.setText(Math.round(currentRecordTime) + "/" + recordTime + "s");
+                }
                 updatePlayLayout(false, 0, getHeight() / (float) 2.0, stopX, getHeight() / (float) 2.0);
                 break;
 
@@ -99,4 +121,11 @@ public class RecordProgressBar extends AppCompatButton {
         invalidate();
     }
 
+    public void setCurrentPlayTimeView(TextView currentPlayTime) {
+        this.currentPlayTime = currentPlayTime;
+    }
+
+    public void setRecordTime(int recordTime) {
+        this.recordTime = recordTime;
+    }
 }

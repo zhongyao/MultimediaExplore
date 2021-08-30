@@ -121,23 +121,25 @@
 
         <com.hongri.multimedia.audio.widget.RecordProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="300dp"
+            android:layout_width="220dp"
             android:layout_height="100dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="70dp"
-            android:background="@null"/>
+            android:layout_marginStart="60dp"
+            android:background="@null" />
 
         <TextView
             android:id="@+id/playTime"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="center_vertical|right" />
+            android:layout_gravity="center_vertical|right"
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/currentPlayTime"
             android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center" />
 
     </com.hongri.multimedia.audio.widget.RecordPlayView>
 
