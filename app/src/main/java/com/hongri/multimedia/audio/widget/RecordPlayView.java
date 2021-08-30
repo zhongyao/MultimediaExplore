@@ -81,6 +81,7 @@ public class RecordPlayView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        Log.d(TAG, "parent--onInterceptTouchEvent---> event:" + event.getAction());
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -89,7 +90,10 @@ public class RecordPlayView extends FrameLayout {
             case MotionEvent.ACTION_MOVE:
                 float stopX = event.getX();
                 float stopY = event.getY();
-                progressBar.updatePlayLayout(false, progressBarLeftX, progressBarHeight / 2, stopX, progressBarHeight / 2);
+                if (stopX > progressBarLeftX && stopX < progressBarRightX) {
+                    //不拦截事件，传递给子ProgressBar消费
+                    return false;
+                }
                 break;
             case MotionEvent.ACTION_UP:
 
@@ -100,5 +104,11 @@ public class RecordPlayView extends FrameLayout {
                 break;
         }
         return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d(TAG, "parent--onTouchEvent---> event:" + event.getAction());
+        return super.onTouchEvent(event);
     }
 }

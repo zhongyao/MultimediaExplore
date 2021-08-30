@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,9 +60,34 @@ public class RecordProgressBar extends AppCompatButton {
         canvas.drawLine(0, startY, getWidth(), stopY, linePaintBottom);
         if (!isInit) {
             canvas.drawLine(0, startY, stopX, stopY, linePaintTop);
+            canvas.drawCircle(stopX, stopY, 30, circlePaint);
+        } else {
+            canvas.drawCircle(0, getHeight() / (float) 2.0, 30, circlePaint);
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d(TAG, "child--onTouchEvent---> event:" + event.getAction());
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float stopX = event.getX();
+                updatePlayLayout(false, 0, getHeight() / (float) 2.0, stopX, getHeight() / (float) 2.0);
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                break;
+
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 
     public void updatePlayLayout(boolean isInit, float startX, float startY, float stopX, float stopY) {
         Log.d(TAG, "isInit:" + isInit + " startX:" + startX + " startY:" + startY + " stopX:" + stopX + " stopY:" + stopY);
