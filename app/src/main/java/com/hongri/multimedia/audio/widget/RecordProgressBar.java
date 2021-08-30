@@ -30,7 +30,7 @@ public class RecordProgressBar extends AppCompatButton {
     private boolean isInit;
     private float startX, startY, stopX, stopY;
     private TextView currentPlayTime;
-    private int recordTime;
+    private long recordTime;
     private float width, height;
 
     public RecordProgressBar(@NonNull Context context) {
@@ -125,7 +125,7 @@ public class RecordProgressBar extends AppCompatButton {
         this.currentPlayTime = currentPlayTime;
     }
 
-    public void setRecordTime(int recordTime) {
+    public void setRecordTime(long recordTime) {
         this.recordTime = recordTime;
     }
 }

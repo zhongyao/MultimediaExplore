@@ -3,6 +3,8 @@ package com.hongri.multimedia.audio.widget;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hongri.multimedia.R;
+import com.hongri.multimedia.audio.AudioPlayer;
 import com.hongri.multimedia.audio.state.PlayStatusManager;
 import com.hongri.multimedia.audio.state.Status;
 
@@ -28,11 +31,33 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
     private ImageView playIv;
     private RecordProgressBar progressBar;
     private TextView playTime;
+    private static long duration;
     private TextView currentPlayTime;
     private float progressBarLeftX, progressBarRightX, progressBarWidth;
     private float progressBarTopY, progressBarBottomY, progressBarHeight;
 
     private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
+
+    public Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case AudioPlayer.WHAT_DURATION:
+                    duration = (long) msg.obj;
+                    if (playTime != null) {
+                        playTime.setText(String.valueOf(duration) + "s");
+                    }
+
+                    if (progressBar != null) {
+                        progressBar.setRecordTime(duration);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     public RecordPlayView(@NonNull Context context) {
         super(context);
@@ -89,21 +114,16 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                 playIv.setOnTouchListener(this);
             }
 
+            init(Uri.parse(audioUrl));
+
             if (progressBar != null && currentPlayTime != null) {
                 progressBar.setCurrentPlayTimeView(currentPlayTime);
-                progressBar.setRecordTime(30);
             }
-
-            if (playTime != null) {
-                playTime.setText("30s");
-            }
-
-            init(Uri.parse(audioUrl));
         }
     }
 
     private void init(Uri uri) {
-        PlayStatusManager.setStatus(getContext(), Status.STATUS_READY, uri);
+        PlayStatusManager.setStatus(getContext(), handler, Status.STATUS_READY, uri);
     }
 
     @Override

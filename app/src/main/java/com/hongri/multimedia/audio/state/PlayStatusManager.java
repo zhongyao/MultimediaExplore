@@ -2,6 +2,7 @@ package com.hongri.multimedia.audio.state;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.AudioPlayer;
@@ -18,10 +19,10 @@ public class PlayStatusManager {
 
     public static void setStatus(Status curStatus) {
         Log.d(TAG, "curStatus:" + curStatus);
-        setStatus(null, curStatus,null);
+        setStatus(null, null, curStatus, null);
     }
 
-    public static void setStatus(Context context, Status curStatus, Object object) {
+    public static void setStatus(Context context, Handler handler, Status curStatus, Object object) {
         switch (curStatus) {
             case STATUS_NO_READY:
 
@@ -29,9 +30,9 @@ public class PlayStatusManager {
 
             case STATUS_READY:
                 //音频初始化
-                if (object instanceof Uri) {
-                     uri = (Uri) object;
-                    AudioPlayer.getInstance().createDefaultPlayer(context, uri);
+                if (context != null && handler != null && object instanceof Uri) {
+                    uri = (Uri) object;
+                    AudioPlayer.getInstance().createDefaultPlayer(context, handler, uri);
                 }
                 break;
 
@@ -63,5 +64,9 @@ public class PlayStatusManager {
     public static Status getStatus() {
         //TODO
         return AudioPlayer.getInstance().getStatus();
+    }
+
+    public static long getDuration() {
+        return AudioPlayer.getInstance().getDuration();
     }
 }
