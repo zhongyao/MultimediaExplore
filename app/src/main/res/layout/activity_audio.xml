@@ -113,11 +113,12 @@
         android:layout_height="200dp">
 
         <ImageView
-            android:id="@+id/playAnimIv"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/playIv"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
-            android:background="#ff0000" />
+            android:background="@drawable/audio_play_bg" />
 
         <com.hongri.multimedia.audio.widget.RecordProgressBar
             android:id="@+id/progressBar"

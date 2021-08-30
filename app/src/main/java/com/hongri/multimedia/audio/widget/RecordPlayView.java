@@ -1,6 +1,8 @@
 package com.hongri.multimedia.audio.widget;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -12,19 +14,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hongri.multimedia.R;
+import com.hongri.multimedia.audio.state.PlayStatusManager;
+import com.hongri.multimedia.audio.state.Status;
+
 /**
  * Create by zhongyao on 2021/8/24
  * Description:播放录音
  */
-public class RecordPlayView extends FrameLayout {
+public class RecordPlayView extends FrameLayout implements View.OnTouchListener {
 
     private final String TAG = "RecordPlayView";
-    private ImageView playAnimIv;
+    private ImageView playIv;
     private RecordProgressBar progressBar;
     private TextView playTime;
     private TextView currentPlayTime;
     private float progressBarLeftX, progressBarRightX, progressBarWidth;
     private float progressBarTopY, progressBarBottomY, progressBarHeight;
+
+    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
 
     public RecordPlayView(@NonNull Context context) {
         super(context);
@@ -47,7 +55,7 @@ public class RecordPlayView extends FrameLayout {
         if (childCount >= 4) {
             View childView1 = getChildAt(0);
             if (childView1 instanceof ImageView) {
-                playAnimIv = (ImageView) childView1;
+                playIv = (ImageView) childView1;
             }
 
             View childView2 = getChildAt(1);
@@ -77,6 +85,10 @@ public class RecordPlayView extends FrameLayout {
                 currentPlayTime = (TextView) childView4;
             }
 
+            if (playIv != null) {
+                playIv.setOnTouchListener(this);
+            }
+
             if (progressBar != null && currentPlayTime != null) {
                 progressBar.setCurrentPlayTimeView(currentPlayTime);
                 progressBar.setRecordTime(30);
@@ -85,7 +97,13 @@ public class RecordPlayView extends FrameLayout {
             if (playTime != null) {
                 playTime.setText("30s");
             }
+
+            init(Uri.parse(audioUrl));
         }
+    }
+
+    private void init(Uri uri) {
+        PlayStatusManager.setStatus(getContext(), Status.STATUS_READY, uri);
     }
 
     @Override
@@ -121,5 +139,16 @@ public class RecordPlayView extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         Log.d(TAG, "parent--onTouchEvent---> event:" + event.getAction());
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.d(TAG, "onTouch");
+        int id = v.getId();
+        if (id == R.id.playIv) {
+            PlayStatusManager.setStatus(Status.STATUS_START);
+            return true;
+        }
+        return false;
     }
 }
