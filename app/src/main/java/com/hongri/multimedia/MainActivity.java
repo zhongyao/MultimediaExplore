@@ -11,7 +11,7 @@ import com.hongri.multimedia.audio.AudioActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button audioBtn;
+    private Button audioBtn, videoBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +19,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         audioBtn = findViewById(R.id.audioBtn);
+        videoBtn = findViewById(R.id.videoBtn);
         audioBtn.setOnClickListener(this);
+        videoBtn.setOnClickListener(this);
     }
 
     @Override
@@ -29,6 +31,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (id) {
             case R.id.audioBtn:
                 intent = new Intent(MainActivity.this, AudioActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.videoBtn:
+                intent = new Intent(MainActivity.this, VideoActivity.class);
                 startActivity(intent);
                 break;
 

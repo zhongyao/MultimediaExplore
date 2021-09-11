@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.source.MediaLoadData;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.ads.AdsMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
@@ -31,12 +32,12 @@ import com.google.android.exoplayer2.util.Util;
 import com.hongri.multimedia.audio.state.Status;
 
 /**
- * Create by zhongyao on 2021/8/30
+ * Create by zhongyao on 2021/9/8
  * Description:
  */
-public class AudioPlayer {
+public class VideoPlayer {
 
-    private final String TAG = "AudioPlayer";
+    private final String TAG = "VideoPlayer";
     private ExoPlayer player;
     private DefaultDataSourceFactory dataSourceFactory;
     private MediaSource mediaSource;
@@ -46,32 +47,25 @@ public class AudioPlayer {
     public static final int WHAT_DURATION = 0;
     public static final int WHAT_POSITION = 1;
     private Handler handler;
-    private long currentPosition, contentBufferedPosition;
+    private long playbackPosition, currentWindow;
+    private boolean playWhenReady;
 
-    private AudioPlayer() {
-//        createDefaultPlayer();
+    private VideoPlayer() {
     }
 
-    public Status getStatus() {
-        return status;
+    public static class Holder {
+        public static VideoPlayer videoPlayer = new VideoPlayer();
     }
 
-    public static class AudioPlayerHolder {
-        public static AudioPlayer instance = new AudioPlayer();
+    public static VideoPlayer getInstance() {
+        return Holder.videoPlayer;
     }
 
-    public static AudioPlayer getInstance() {
-        return AudioPlayerHolder.instance;
-    }
-
-
-    public void createDefaultPlayer(Context context, Handler handler, Uri uri) {
+    public ExoPlayer createDefaultPlayer(Context context, Handler handler, Uri uri) {
         this.handler = handler;
         player = new SimpleExoPlayer.Builder(context).build();
+        dataSourceFactory = new DefaultDataSourceFactory(context);
         mediaSource = buildMediaSource(uri);
-        if (mediaSource == null) {
-            return;
-        }
         mediaSource.addEventListener(handler, new MediaSourceEventListener() {
             @Override
             public void onLoadCompleted(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
@@ -87,8 +81,6 @@ public class AudioPlayer {
         });
         player.setMediaSource(mediaSource);
         player.prepare();
-
-        player.setPlayWhenReady(true);
 
         player.addListener(new Player.Listener() {
 
@@ -151,15 +143,13 @@ public class AudioPlayer {
             public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
             }
         });
+        return player;
     }
 
     private MediaSource buildMediaSource(Uri uri) {
-        if (uri == null) {
-            return null;
-        }
         int type = Util.inferContentType(uri);
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
-        Log.d(TAG, "buildMediaSource --- > uri:" + uri.toString() + " type:" + type);
+        Log.d(TAG, "buildMediaSource --- > type:" + type);
         switch (type) {
             case C.TYPE_DASH:
                 return new DashMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
@@ -186,29 +176,15 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
-        player.play();
-
-
-//        if (handler != null) {
-//            while (currentPosition < getDuration()) {
-//                Message msg = new Message();
-//                currentPosition = player.getCurrentPosition() / 1000;
-//                contentBufferedPosition = player.getContentBufferedPosition() / 1000;
-//                HashMap<String, Long> hashMap = new HashMap<>();
-//                hashMap.put("currentPosition", currentPosition);
-//                hashMap.put("contentBufferedPosition", contentBufferedPosition);
-//                msg.what = WHAT_POSITION;
-//                msg.obj = hashMap;
-//                handler.sendMessageDelayed(msg, 1000);
-//                Log.d(TAG, "player.getDuration():" + player.getDuration() + " player.getContentPosition():" + player.getContentPosition()+ " player.getCurrentPosition():" + player.getCurrentPosition() + " currentPosition:" + currentPosition + " getDuration:" + getDuration());
-//            }
-//        }
+        Log.d(TAG, "play");
+        player.setPlayWhenReady(true);
     }
 
     public void pause() {
         if (player == null) {
             return;
         }
+        Log.d(TAG, "pause");
         if (player.isPlaying()) {
             player.pause();
         }
@@ -218,6 +194,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        Log.d(TAG, "stop");
         player.stop();
     }
 
@@ -225,6 +202,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        Log.d(TAG, "cancel");
         //TODO cancel
     }
 
@@ -232,6 +210,16 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        Log.d(TAG, "release");
+        playbackPosition = player.getCurrentPosition();
+        currentWindow = player.getCurrentWindowIndex();
+        playWhenReady = player.getPlayWhenReady();
         player.release();
+        player = null;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
 }

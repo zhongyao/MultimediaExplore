@@ -16,10 +16,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.AudioPlayer;
 import com.hongri.multimedia.audio.state.PlayStatusManager;
 import com.hongri.multimedia.audio.state.Status;
+
+import java.util.HashMap;
 
 /**
  * Create by zhongyao on 2021/8/24
@@ -35,8 +39,11 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
     private TextView currentPlayTime;
     private float progressBarLeftX, progressBarRightX, progressBarWidth;
     private float progressBarTopY, progressBarBottomY, progressBarHeight;
+    private long currentPosition, contentBufferedPosition;
 
-    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
+//    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
+    private String audioUrl = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
+
 
     public Handler handler = new Handler() {
         @Override
@@ -50,7 +57,16 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                     }
 
                     if (progressBar != null) {
-                        progressBar.setRecordTime(duration);
+                        progressBar.setDuration(duration);
+                    }
+                    break;
+
+                case AudioPlayer.WHAT_POSITION:
+                    if (msg.obj instanceof HashMap) {
+                        HashMap<String, Long> hashMap = (HashMap<String, Long>) msg.obj;
+                        currentPosition = hashMap.get("currentPosition");
+                        contentBufferedPosition = hashMap.get("contentBufferedPosition");
+                        Log.d(TAG, "handler---> currentPosition:" + currentPosition + " contentBufferedPosition:" + contentBufferedPosition);
                     }
                     break;
                 default:

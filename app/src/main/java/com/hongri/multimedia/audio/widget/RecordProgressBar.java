@@ -30,7 +30,7 @@ public class RecordProgressBar extends AppCompatButton {
     private boolean isInit;
     private float startX, startY, stopX, stopY;
     private TextView currentPlayTime;
-    private long recordTime;
+    private long duration;
     private float width, height;
 
     public RecordProgressBar(@NonNull Context context) {
@@ -92,11 +92,11 @@ public class RecordProgressBar extends AppCompatButton {
             case MotionEvent.ACTION_MOVE:
                 float stopX = event.getX();
 
-                Log.d(TAG, "recordTime:" + recordTime + " width:" + width + " stopX:" + stopX);
-                float currentRecordTime = (recordTime / width) * stopX;
-                Log.d(TAG, "currentRecordTime:" + currentRecordTime);
+                Log.d(TAG, "duration:" + duration + " width:" + width + " stopX:" + stopX);
+                float currentSeekPosition = (duration / width) * stopX;
+                Log.d(TAG, "currentSeekPosition:" + currentSeekPosition);
                 if (currentPlayTime != null) {
-                    currentPlayTime.setText(Math.round(currentRecordTime) + "/" + recordTime + "s");
+                    currentPlayTime.setText(Math.round(currentSeekPosition) + "/" + duration + "s");
                 }
                 updatePlayLayout(false, 0, getHeight() / (float) 2.0, stopX, getHeight() / (float) 2.0);
                 break;
@@ -125,7 +125,7 @@ public class RecordProgressBar extends AppCompatButton {
         this.currentPlayTime = currentPlayTime;
     }
 
-    public void setRecordTime(long recordTime) {
-        this.recordTime = recordTime;
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

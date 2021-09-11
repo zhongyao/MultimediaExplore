@@ -41,4 +41,9 @@ dependencies {
     // 多媒体播放器
     implementation 'com.google.android.exoplayer:exoplayer-core:2.15.0'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.15.0'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.15.0'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.15.0'
+    implementation 'com.google.android.exoplayer:exoplayer-transformer:2.15.0'
+    implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.15.0'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.15.0'
 }
