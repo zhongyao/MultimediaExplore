@@ -39,10 +39,13 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
     private TextView currentPlayTime;
     private float progressBarLeftX, progressBarRightX, progressBarWidth;
     private float progressBarTopY, progressBarBottomY, progressBarHeight;
-    private long currentPosition, contentBufferedPosition;
+    private long currentPosition, contentPosition, contentBufferedPosition;
 
 //    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
-    private String audioUrl = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
+//    private String audioUrl = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
+//    private String audioUrl = "http://192.168.1.102:1231/music/a.mp3";
+    private String audioUrl = "https://www.twle.cn/static/i/song.mp3";
+
 
 
     public Handler handler = new Handler() {
@@ -65,8 +68,9 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                     if (msg.obj instanceof HashMap) {
                         HashMap<String, Long> hashMap = (HashMap<String, Long>) msg.obj;
                         currentPosition = hashMap.get("currentPosition");
+                        contentPosition = hashMap.get("contentPosition");
                         contentBufferedPosition = hashMap.get("contentBufferedPosition");
-                        Log.d(TAG, "handler---> currentPosition:" + currentPosition + " contentBufferedPosition:" + contentBufferedPosition);
+                        Log.d(TAG, "handler---> currentPosition:" + currentPosition + " contentPosition:" + contentPosition + " contentBufferedPosition:" + contentBufferedPosition);
                     }
                     break;
                 default:

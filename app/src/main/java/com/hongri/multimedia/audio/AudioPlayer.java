@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.LoadEventInfo;
 import com.google.android.exoplayer2.source.MediaLoadData;
@@ -29,6 +30,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.hongri.multimedia.audio.state.Status;
+
+import java.util.HashMap;
 
 /**
  * Create by zhongyao on 2021/8/30
@@ -45,8 +48,8 @@ public class AudioPlayer {
     private long duration;
     public static final int WHAT_DURATION = 0;
     public static final int WHAT_POSITION = 1;
-    private Handler handler;
-    private long currentPosition, contentBufferedPosition;
+    //    private Handler handler;
+    private long currentPosition, contentPosition, contentBufferedPosition;
 
     private AudioPlayer() {
 //        createDefaultPlayer();
@@ -66,29 +69,64 @@ public class AudioPlayer {
 
 
     public void createDefaultPlayer(Context context, Handler handler, Uri uri) {
-        this.handler = handler;
         player = new SimpleExoPlayer.Builder(context).build();
         mediaSource = buildMediaSource(uri);
         if (mediaSource == null) {
             return;
         }
-        mediaSource.addEventListener(handler, new MediaSourceEventListener() {
+
+        Handler handlerInner = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Message msgOuter = new Message();
+                if (msg.what == WHAT_POSITION) {
+                    currentPosition = player.getCurrentPosition() / 1000;
+                    contentPosition = player.getContentPosition() / 1000;
+                    contentBufferedPosition = player.getContentBufferedPosition() / 1000;
+                    Log.d(TAG, "-----> currentPosition:" + currentPosition + " contentPosition:" + contentPosition + " contentBufferedPosition:" + contentBufferedPosition);
+                    HashMap<String, Long> hashMap = new HashMap<>();
+                    hashMap.put("currentPosition", currentPosition);
+                    hashMap.put("contentPosition", contentPosition);
+                    hashMap.put("contentBufferedPosition", contentBufferedPosition);
+                    msgOuter.what = WHAT_POSITION;
+                    msgOuter.obj = hashMap;
+                    handler.sendMessage(msgOuter);
+                    sendEmptyMessageDelayed(WHAT_POSITION, 300);
+                } else if (msg.what == WHAT_DURATION) {
+                    msgOuter.obj = (long) msg.obj;
+                    handler.sendMessage(msgOuter);
+                }
+            }
+        };
+
+        mediaSource.addEventListener(handlerInner, new MediaSourceEventListener() {
+
+            @Override
+            public void onLoadStarted(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
+                Log.d(TAG, "onLoadStarted ---> duration:" + duration);
+            }
+
             @Override
             public void onLoadCompleted(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
                 mediaSource.removeEventListener(this);
+
+                //发送时长消息
                 duration = player.getDuration() / 1000;
                 Message msg = new Message();
                 msg.what = WHAT_DURATION;
                 msg.obj = duration;
-                handler.sendMessage(msg);
+                handlerInner.sendMessage(msg);
 
-                Log.d(TAG, "onLoadCompleted---> duration:" + duration);
+                //发送position消息
+                Message msgPos = new Message();
+                msgPos.what = WHAT_POSITION;
+                handlerInner.sendMessage(msgPos);
+
+                Log.d(TAG, "onLoadCompleted ---> duration:" + duration);
             }
         });
         player.setMediaSource(mediaSource);
-        player.prepare();
-
-        player.setPlayWhenReady(true);
 
         player.addListener(new Player.Listener() {
 
@@ -144,13 +182,22 @@ public class AudioPlayer {
 
             @Override
             public void onAudioAttributesChanged(AudioAttributes audioAttributes) {
+                Log.d(TAG, "audioAttributes --- > " + audioAttributes.toString());
 
             }
 
             @Override
             public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
+                Log.d(TAG, "mediaMetadata --- > title:" + mediaMetadata.title);
+            }
+
+            @Override
+            public void onTimelineChanged(Timeline timeline, int reason) {
+                Log.d(TAG, "timeLine --- > " + timeline.toString() + " reason:" + reason);
             }
         });
+
+        player.prepare();
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -187,22 +234,6 @@ public class AudioPlayer {
             return;
         }
         player.play();
-
-
-//        if (handler != null) {
-//            while (currentPosition < getDuration()) {
-//                Message msg = new Message();
-//                currentPosition = player.getCurrentPosition() / 1000;
-//                contentBufferedPosition = player.getContentBufferedPosition() / 1000;
-//                HashMap<String, Long> hashMap = new HashMap<>();
-//                hashMap.put("currentPosition", currentPosition);
-//                hashMap.put("contentBufferedPosition", contentBufferedPosition);
-//                msg.what = WHAT_POSITION;
-//                msg.obj = hashMap;
-//                handler.sendMessageDelayed(msg, 1000);
-//                Log.d(TAG, "player.getDuration():" + player.getDuration() + " player.getContentPosition():" + player.getContentPosition()+ " player.getCurrentPosition():" + player.getCurrentPosition() + " currentPosition:" + currentPosition + " getDuration:" + getDuration());
-//            }
-//        }
     }
 
     public void pause() {
