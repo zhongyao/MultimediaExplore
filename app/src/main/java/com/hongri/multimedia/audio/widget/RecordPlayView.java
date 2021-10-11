@@ -71,6 +71,7 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                         contentPosition = hashMap.get("contentPosition");
                         contentBufferedPosition = hashMap.get("contentBufferedPosition");
                         Log.d(TAG, "handler---> currentPosition:" + currentPosition + " contentPosition:" + contentPosition + " contentBufferedPosition:" + contentBufferedPosition);
+                        progressBar.setCurrentPosition(currentPosition);
                     }
                     break;
                 default:

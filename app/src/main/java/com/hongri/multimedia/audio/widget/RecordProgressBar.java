@@ -128,4 +128,12 @@ public class RecordProgressBar extends AppCompatButton {
     public void setDuration(long duration) {
         this.duration = duration;
     }
+
+    public void setCurrentPosition(long currentPosition) {
+        this.isInit = false;
+        Log.d(TAG, "currentPosition:" + currentPosition + " duration:" + duration + " getWidth:" + getWidth());
+        this.stopX = ((float)currentPosition / (float) duration) * getWidth();
+        Log.d(TAG, "stopX:" + stopX);
+        invalidate();
+    }
 }
