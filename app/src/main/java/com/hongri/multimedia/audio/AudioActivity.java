@@ -15,6 +15,7 @@ import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.audio.widget.RecordButton;
+import com.hongri.multimedia.audio.widget.RecordPlayView;
 import com.hongri.multimedia.audio.widget.RecordView;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     private Button start, pause, cancel, stop;
     private RecordView recordView;
     private RecordButton recordBtn;
+    private RecordPlayView recordPlayView;
     private boolean permissionGranted = false;
     private int phoneWidth;
     private static String[] PERMISSION_ALL = {
@@ -50,6 +52,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         stop = findViewById(R.id.stop);
         recordView = findViewById(R.id.recordLayout);
         recordBtn = findViewById(R.id.recordBtn);
+        recordPlayView = findViewById(R.id.recordPlayView);
 
         start.setOnClickListener(this);
         pause.setOnClickListener(this);
@@ -112,5 +115,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         AudioStatusManager.setStatus(Status.STATUS_RELEASE);
+        if (recordPlayView != null) {
+            recordPlayView.onRelease();
+        }
     }
 }

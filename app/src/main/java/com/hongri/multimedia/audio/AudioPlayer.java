@@ -1,5 +1,6 @@
 package com.hongri.multimedia.audio;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -50,6 +51,7 @@ public class AudioPlayer {
     public static final int WHAT_POSITION = 1;
     //    private Handler handler;
     private long currentPosition, contentPosition, contentBufferedPosition;
+    private Handler handlerInner;
 
     private AudioPlayer() {
 //        createDefaultPlayer();
@@ -68,6 +70,7 @@ public class AudioPlayer {
     }
 
 
+    @SuppressLint("HandlerLeak")
     public void createDefaultPlayer(Context context, Handler handler, Uri uri) {
         player = new SimpleExoPlayer.Builder(context).build();
         mediaSource = buildMediaSource(uri);
@@ -75,7 +78,7 @@ public class AudioPlayer {
             return;
         }
 
-        Handler handlerInner = new Handler() {
+        handlerInner = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -264,5 +267,8 @@ public class AudioPlayer {
             return;
         }
         player.release();
+        if (handlerInner != null) {
+            handlerInner.removeCallbacksAndMessages(null);
+        }
     }
 }

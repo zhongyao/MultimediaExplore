@@ -1,5 +1,6 @@
 package com.hongri.multimedia.audio.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
@@ -46,8 +47,7 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
 //    private String audioUrl = "http://192.168.1.102:1231/music/a.mp3";
     private String audioUrl = "https://www.twle.cn/static/i/song.mp3";
 
-
-
+    @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -56,7 +56,7 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                 case AudioPlayer.WHAT_DURATION:
                     duration = (long) msg.obj;
                     if (playTime != null) {
-                        playTime.setText(String.valueOf(duration) + "s");
+                        playTime.setText((duration + "s"));
                     }
 
                     if (progressBar != null) {
@@ -191,5 +191,11 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
             return true;
         }
         return false;
+    }
+
+    public void onRelease() {
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 }
