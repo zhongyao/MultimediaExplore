@@ -45,6 +45,19 @@ public class FileUtil {
         return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, AudioStatusManager.getCurrentConfig().getFormat().getExtension());
     }
 
+    /**
+     * 根据当前的时间生成相应的文件名【临时file】
+     * 实例 record_20160101_13_15_12
+     */
+    public static String getTempFilePath() {
+        String fileDir = String.format(Locale.getDefault(), "%s/Record/", Environment.getExternalStorageDirectory().getAbsolutePath());
+        if (!FileUtil.createOrExistsDir(fileDir)) {
+            Logger.e(TAG, "文件夹创建失败：%s", fileDir);
+        }
+        String fileName = String.format(Locale.getDefault(), "record_tmp_%s", FileUtil.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
+        return String.format(Locale.getDefault(), "%s%s.pcm", fileDir, fileName);
+    }
+
     public static boolean isFile(final File file) {
         return file != null && file.exists() && file.isFile();
     }

@@ -18,10 +18,14 @@ import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.audio.wav.WavUtils;
 import com.hongri.multimedia.util.ByteUtils;
 import com.hongri.multimedia.util.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,6 +73,9 @@ public class AudioRecorder {
     private RecordFftDataListener recordFftDataListener;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
     private FftFactory fftFactory = new FftFactory(FftFactory.Level.Original);
+    private File resultFile = null;
+    private File tmpFile = null;
+    private List<File> files = new ArrayList<>();
 
     /**
      * 录音配置
@@ -168,6 +175,12 @@ public class AudioRecorder {
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
 
+        resultFile = new File(fileName);
+
+        String tempFilePath = FileUtil.getTempFilePath();
+
+        tmpFile = new File(tempFilePath);
+
         //开启录制音频线程
         recordThread = new AudioRecordThread(listener);
         recordThread.start();
@@ -197,7 +210,7 @@ public class AudioRecorder {
                     startMp3Recorder(listener);
                     break;
                 default:
-//                    startPcmRecorder();
+                    startPcmRecorder(listener);
                     break;
             }
             //TODO 修改前
@@ -234,6 +247,136 @@ public class AudioRecorder {
         } else {
             Logger.d(TAG, "暂停");
         }
+    }
+
+    private void startPcmRecorder(RecordStreamListener listener) {
+        status = Status.STATUS_START;
+//        notifyState();
+        Logger.d(TAG, "开始录制 Pcm");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(tmpFile);
+            audioRecord.startRecording();
+            byte[] byteBuffer = new byte[bufferSizeInBytes];
+
+            while (status == Status.STATUS_START) {
+                int end = audioRecord.read(byteBuffer, 0, byteBuffer.length);
+                notifyData(listener, byteBuffer);
+                fos.write(byteBuffer, 0, end);
+                fos.flush();
+            }
+            audioRecord.stop();
+            files.add(tmpFile);
+            if (status == Status.STATUS_STOP) {
+                makeFile();
+            } else {
+                Logger.i(TAG, "暂停！");
+            }
+        } catch (Exception e) {
+            Logger.e(e, TAG, e.getMessage());
+//            notifyError("录音失败");
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (status != Status.STATUS_PAUSE) {
+            status = Status.STATUS_NO_READY;
+//            notifyState();
+            Logger.d(TAG, "录音结束");
+        }
+    }
+
+    private void makeFile() {
+        switch (currentConfig.getFormat()) {
+            case MP3:
+                return;
+            case WAV:
+                mergePcmFile();
+                makeWav();
+                break;
+            case PCM:
+                mergePcmFile();
+                break;
+            default:
+                break;
+        }
+//        notifyFinish();
+        Logger.i(TAG, "录音完成！ path: %s ； 大小：%s", resultFile.getAbsoluteFile(), resultFile.length());
+    }
+
+    /**
+     * 添加Wav头文件
+     */
+    private void makeWav() {
+        if (!FileUtil.isFile(resultFile) || resultFile.length() == 0) {
+            return;
+        }
+        byte[] header = WavUtils.generateWavFileHeader((int) resultFile.length(), currentConfig.getSampleRate(), currentConfig.getChannelCount(), currentConfig.getEncoding());
+        WavUtils.writeHeader(resultFile, header);
+    }
+
+    /**
+     * 合并文件
+     */
+    private void mergePcmFile() {
+        boolean mergeSuccess = mergePcmFiles(resultFile, files);
+        if (!mergeSuccess) {
+//            notifyError("合并失败");
+        }
+    }
+
+    /**
+     * 合并Pcm文件
+     *
+     * @param recordFile 输出文件
+     * @param files      多个文件源
+     * @return 是否成功
+     */
+    private boolean mergePcmFiles(File recordFile, List<File> files) {
+        if (recordFile == null || files == null || files.size() <= 0) {
+            return false;
+        }
+
+        FileOutputStream fos = null;
+        BufferedOutputStream outputStream = null;
+        byte[] buffer = new byte[1024];
+        try {
+            fos = new FileOutputStream(recordFile);
+            outputStream = new BufferedOutputStream(fos);
+
+            for (int i = 0; i < files.size(); i++) {
+                BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(files.get(i)));
+                int readCount;
+                while ((readCount = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, readCount);
+                }
+                inputStream.close();
+            }
+        } catch (Exception e) {
+            Logger.e(e, TAG, e.getMessage());
+            return false;
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (int i = 0; i < files.size(); i++) {
+            files.get(i).delete();
+        }
+        files.clear();
+        return true;
     }
 
     private void stopMp3Encoded() {

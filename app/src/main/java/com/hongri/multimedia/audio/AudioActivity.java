@@ -89,6 +89,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         recordConfig = new RecordConfig();
         recordConfig.setEncodingConfig(AudioFormat.ENCODING_PCM_16BIT);
         recordConfig.setFormat(RecordConfig.RecordFormat.MP3);
+//        recordConfig.setFormat(RecordConfig.RecordFormat.WAV);
         recordConfig.setSampleRate(16000);
         String recordDir = String.format(Locale.getDefault(), "%s/Record/com.zhongyao.mainnn/",
                 Environment.getExternalStorageDirectory().getAbsolutePath());
