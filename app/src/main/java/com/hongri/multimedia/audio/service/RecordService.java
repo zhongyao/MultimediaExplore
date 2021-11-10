@@ -13,19 +13,13 @@ import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.Logger;
 
-import java.io.File;
-
 /**
  * Create by zhongyao on 2021/8/30
  * Description: 录音服务
  */
 public class RecordService extends Service {
-    private static final String TAG = RecordService.class.getSimpleName();
 
-    /**
-     * 录音配置
-     */
-    private static RecordConfig currentConfig /*= new RecordConfig()*/;
+    private static final String TAG = RecordService.class.getSimpleName();
 
     private final static String ACTION_NAME = "action_type";
 
@@ -165,7 +159,7 @@ public class RecordService extends Service {
 //        return false;
 //    }
     public static void changeRecordDir(String recordDir) {
-        currentConfig.setRecordDir(recordDir);
+        getCurrentConfig().setRecordDir(recordDir);
     }
 
     /**
@@ -230,10 +224,10 @@ public class RecordService extends Service {
     }
 
     public static RecordConfig getCurrentConfig() {
-        return currentConfig;
+        return AudioRecorder.getInstance().getCurrentConfig();
     }
 
     public static void setCurrentConfig(RecordConfig currentConfig) {
-        RecordService.currentConfig = currentConfig;
+        AudioRecorder.getInstance().setCurrentConfig(currentConfig);
     }
 }

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.Logger;
 
@@ -50,8 +51,21 @@ public class AudioRecorder {
     private List<String> filesName = new ArrayList<>();
 
     private AudioRecordThread recordThread;
+
     private Mp3EncodeThread mp3EncodeThread;
 
+    /**
+     * 录音配置
+     */
+    private RecordConfig currentConfig = new RecordConfig();
+
+    public RecordConfig getCurrentConfig() {
+        return currentConfig;
+    }
+
+    public void setCurrentConfig(RecordConfig recordConfig) {
+        currentConfig = recordConfig;
+    }
 
     /**
      * 类级的内部类，也就是静态类的成员式内部类，该内部类的实例与外部类的实例
@@ -130,7 +144,7 @@ public class AudioRecorder {
         public AudioRecordThread(RecordStreamListener listener) {
             this.listener = listener;
 
-            if (true/*currentConfig.getFormat() == RecordConfig.RecordFormat.MP3*/) {
+            if (getCurrentConfig().getFormat() == RecordConfig.RecordFormat.MP3) {
                 if (mp3EncodeThread == null) {
                     initMp3EncoderThread(bufferSizeInBytes);
                 } else {
@@ -142,7 +156,7 @@ public class AudioRecorder {
         @Override
         public void run() {
             super.run();
-            switch (AudioStatusManager.getCurrentConfig().getFormat()) {
+            switch (getCurrentConfig().getFormat()) {
                 case MP3:
                     startMp3Recorder();
                     break;

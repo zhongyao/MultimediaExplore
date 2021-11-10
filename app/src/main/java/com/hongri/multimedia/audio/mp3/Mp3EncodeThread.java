@@ -37,7 +37,6 @@ public class Mp3EncodeThread extends Thread {
     public Mp3EncodeThread(File file, int bufferSize) {
         this.file = file;
         mp3Buffer = new byte[(int) (7200 + (bufferSize * 2 * 1.25))];
-//        RecordConfig currentConfig = RecordService.getCurrentConfig();
         RecordConfig currentConfig = AudioStatusManager.getCurrentConfig();
         int sampleRate = currentConfig.getSampleRate();
 

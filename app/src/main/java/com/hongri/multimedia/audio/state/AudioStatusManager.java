@@ -4,13 +4,8 @@ package com.hongri.multimedia.audio.state;
 import android.content.Context;
 import android.util.Log;
 
-import com.hongri.multimedia.audio.AudioRecorder;
 import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.service.RecordService;
-import com.hongri.multimedia.util.DoubleClickUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Create by zhongyao on 2021/8/18
