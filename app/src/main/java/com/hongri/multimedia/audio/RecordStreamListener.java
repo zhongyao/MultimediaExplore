@@ -6,4 +6,10 @@ package com.hongri.multimedia.audio;
  */
 public interface RecordStreamListener {
     void recordOfByte(byte[] data, int begin, int end);
+    /**
+     * 实时返回音量大小
+     *
+     * @param soundSize 当前音量大小
+     */
+    void onSoundSize(int soundSize);
 }

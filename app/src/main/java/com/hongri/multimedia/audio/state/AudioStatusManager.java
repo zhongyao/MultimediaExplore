@@ -5,6 +5,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.RecordStreamListener;
+import com.hongri.multimedia.audio.listener.RecordDataListener;
+import com.hongri.multimedia.audio.listener.RecordFftDataListener;
+import com.hongri.multimedia.audio.listener.RecordResultListener;
+import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
+import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.service.RecordService;
 
 /**
@@ -28,6 +33,41 @@ public class AudioStatusManager {
 
     public static RecordConfig getCurrentConfig() {
         return RecordService.getCurrentConfig();
+    }
+
+    /**
+     * 录音状态监听回调
+     */
+    public void setRecordStateListener(RecordStateListener listener) {
+        RecordService.setRecordStateListener(listener);
+    }
+
+    /**
+     * 录音数据监听回调
+     */
+    public void setRecordDataListener(RecordDataListener listener) {
+        RecordService.setRecordDataListener(listener);
+    }
+
+    /**
+     * 录音可视化数据回调，傅里叶转换后的频域数据
+     */
+    public void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
+        RecordService.setRecordFftDataListener(recordFftDataListener);
+    }
+
+    /**
+     * 录音文件转换结束回调
+     */
+    public void setRecordResultListener(RecordResultListener listener) {
+        RecordService.setRecordResultListener(listener);
+    }
+
+    /**
+     * 录音音量监听回调
+     */
+    public void setRecordSoundSizeListener(RecordSoundSizeListener listener) {
+        RecordService.setRecordSoundSizeListener(listener);
     }
 
     public static void setStatus(Status curStatus) {

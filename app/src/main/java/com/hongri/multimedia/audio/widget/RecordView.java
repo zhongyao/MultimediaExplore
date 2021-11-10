@@ -250,6 +250,19 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
 //        }
     }
 
+    @Override
+    public void onSoundSize(int volume) {
+        if (!isPressed) {
+            return;
+        }
+        post(new Runnable() {
+            @Override
+            public void run() {
+                recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, (recordBtnWidth / 3) + (float) volume /** 3*/);
+            }
+        });
+    }
+
     public void setRecordConfig(RecordConfig recordConfig) {
         this.recordConfig = recordConfig;
     }

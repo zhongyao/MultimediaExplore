@@ -9,6 +9,11 @@ import android.os.IBinder;
 import com.hongri.multimedia.audio.AudioRecorder;
 import com.hongri.multimedia.audio.FileUtil;
 import com.hongri.multimedia.audio.RecordStreamListener;
+import com.hongri.multimedia.audio.listener.RecordDataListener;
+import com.hongri.multimedia.audio.listener.RecordFftDataListener;
+import com.hongri.multimedia.audio.listener.RecordResultListener;
+import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
+import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.Logger;
@@ -168,26 +173,26 @@ public class RecordService extends Service {
     public static Status getState() {
         return AudioRecorder.getInstance().getStatus();
     }
-//
-//    public static void setRecordStateListener(RecordStateListener recordStateListener) {
-//        RecordHelper.getInstance().setRecordStateListener(recordStateListener);
-//    }
-//
-//    public static void setRecordDataListener(RecordDataListener recordDataListener) {
-//        RecordHelper.getInstance().setRecordDataListener(recordDataListener);
-//    }
-//
-//    public static void setRecordSoundSizeListener(RecordSoundSizeListener recordSoundSizeListener) {
-//        RecordHelper.getInstance().setRecordSoundSizeListener(recordSoundSizeListener);
-//    }
-//
-//    public static void setRecordResultListener(RecordResultListener recordResultListener) {
-//        RecordHelper.getInstance().setRecordResultListener(recordResultListener);
-//    }
-//
-//    public static void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
-//        RecordHelper.getInstance().setRecordFftDataListener(recordFftDataListener);
-//    }
+
+    public static void setRecordStateListener(RecordStateListener recordStateListener) {
+        AudioRecorder.getInstance().setRecordStateListener(recordStateListener);
+    }
+
+    public static void setRecordDataListener(RecordDataListener recordDataListener) {
+        AudioRecorder.getInstance().setRecordDataListener(recordDataListener);
+    }
+
+    public static void setRecordSoundSizeListener(RecordSoundSizeListener recordSoundSizeListener) {
+        AudioRecorder.getInstance().setRecordSoundSizeListener(recordSoundSizeListener);
+    }
+
+    public static void setRecordResultListener(RecordResultListener recordResultListener) {
+        AudioRecorder.getInstance().setRecordResultListener(recordResultListener);
+    }
+
+    public static void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
+        AudioRecorder.getInstance().setRecordFftDataListener(recordFftDataListener);
+    }
 
     private void doCreateDefaultAudio(String path) {
         AudioRecorder.getInstance().createDefaultAudio(path);

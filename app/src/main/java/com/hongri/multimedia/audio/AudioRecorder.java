@@ -3,13 +3,22 @@ package com.hongri.multimedia.audio;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.hongri.multimedia.audio.fftlib.FftFactory;
+import com.hongri.multimedia.audio.listener.RecordDataListener;
+import com.hongri.multimedia.audio.listener.RecordFftDataListener;
+import com.hongri.multimedia.audio.listener.RecordResultListener;
+import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
+import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.util.ByteUtils;
 import com.hongri.multimedia.util.Logger;
 
 import java.io.File;
@@ -53,6 +62,13 @@ public class AudioRecorder {
     private AudioRecordThread recordThread;
 
     private Mp3EncodeThread mp3EncodeThread;
+    private RecordStateListener recordStateListener;
+    private RecordDataListener recordDataListener;
+    private RecordSoundSizeListener recordSoundSizeListener;
+    private RecordResultListener recordResultListener;
+    private RecordFftDataListener recordFftDataListener;
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    private FftFactory fftFactory = new FftFactory(FftFactory.Level.Original);
 
     /**
      * 录音配置
@@ -81,6 +97,26 @@ public class AudioRecorder {
     private AudioRecorder() {
         Log.d(TAG, "AudioRecorder");
         createDefaultAudio("");
+    }
+
+    public void setRecordStateListener(RecordStateListener recordStateListener) {
+        this.recordStateListener = recordStateListener;
+    }
+
+    public void setRecordDataListener(RecordDataListener recordDataListener) {
+        this.recordDataListener = recordDataListener;
+    }
+
+    public void setRecordSoundSizeListener(RecordSoundSizeListener recordSoundSizeListener) {
+        this.recordSoundSizeListener = recordSoundSizeListener;
+    }
+
+    public void setRecordResultListener(RecordResultListener recordResultListener) {
+        this.recordResultListener = recordResultListener;
+    }
+
+    public void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
+        this.recordFftDataListener = recordFftDataListener;
     }
 
     public static AudioRecorder getInstance() {
@@ -158,7 +194,7 @@ public class AudioRecorder {
             super.run();
             switch (getCurrentConfig().getFormat()) {
                 case MP3:
-                    startMp3Recorder();
+                    startMp3Recorder(listener);
                     break;
                 default:
 //                    startPcmRecorder();
@@ -171,7 +207,7 @@ public class AudioRecorder {
 
     }
 
-    private void startMp3Recorder() {
+    private void startMp3Recorder(RecordStreamListener listener) {
         status = Status.STATUS_START;
 //            notifyState();
 
@@ -184,7 +220,7 @@ public class AudioRecorder {
                 if (mp3EncodeThread != null) {
                     mp3EncodeThread.addChangeBuffer(new Mp3EncodeThread.ChangeBuffer(byteBuffer, end));
                 }
-//                notifyData(ByteUtils.toBytes(byteBuffer));
+                notifyData(listener, ByteUtils.toBytes(byteBuffer));
             }
             audioRecord.stop();
         } catch (Exception e) {
@@ -221,6 +257,50 @@ public class AudioRecorder {
         } catch (Exception e) {
             Logger.e(e, TAG, e.getMessage());
         }
+    }
+
+    private void notifyData(RecordStreamListener listener, final byte[] data) {
+
+        if (listener != null) {
+            byte[] fftData = fftFactory.makeFftData(data);
+            listener.onSoundSize(getDb(fftData));
+        }
+        if (recordDataListener == null && recordSoundSizeListener == null && recordFftDataListener == null) {
+            return;
+        }
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (recordDataListener != null) {
+                    recordDataListener.onData(data);
+                }
+
+                if (recordFftDataListener != null || recordSoundSizeListener != null) {
+                    byte[] fftData = fftFactory.makeFftData(data);
+                    if (fftData != null) {
+                        if (recordSoundSizeListener != null) {
+                            recordSoundSizeListener.onSoundSize(getDb(fftData));
+                        }
+
+                        if (recordFftDataListener != null) {
+                            recordFftDataListener.onFftData(fftData);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private int getDb(byte[] data) {
+        double sum = 0;
+        double ave;
+        int length = Math.min(data.length, 128);
+        int offsetStart = 0;
+        for (int i = offsetStart; i < length; i++) {
+            sum += data[i] * data[i];
+        }
+        ave = sum / (length - offsetStart);
+        return (int) (Math.log10(ave) * 20);
     }
 
 
