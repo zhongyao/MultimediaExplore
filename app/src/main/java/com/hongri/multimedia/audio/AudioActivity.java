@@ -3,7 +3,9 @@ package com.hongri.multimedia.audio;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.media.AudioFormat;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,12 +15,14 @@ import com.hjq.permissions.XXPermissions;
 import com.hongri.multimedia.AppUtil;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.audio.widget.RecordButton;
 import com.hongri.multimedia.audio.widget.RecordPlayView;
 import com.hongri.multimedia.audio.widget.RecordView;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 音频Activity：
@@ -33,6 +37,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     private RecordPlayView recordPlayView;
     private boolean permissionGranted = false;
     private int phoneWidth;
+    private RecordConfig recordConfig;
     private static String[] PERMISSION_ALL = {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -43,6 +48,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
+
+        AudioStatusManager.init(this);
 
         phoneWidth = AppUtil.getPhoneWidth(this);
 
@@ -61,7 +68,10 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         recordView.setOnClickListener(this);
         recordBtn.setOnClickListener(this);
 
+        initConfig();
+
         recordView.setPhoneWidth(this, phoneWidth);
+        recordView.setRecordConfig(recordConfig);
 
         XXPermissions.with(this).permission(PERMISSION_ALL).request(new OnPermissionCallback() {
             @Override
@@ -73,6 +83,17 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
             }
         });
+    }
+
+    private void initConfig() {
+        recordConfig = new RecordConfig();
+        recordConfig.setEncodingConfig(AudioFormat.ENCODING_PCM_16BIT);
+        recordConfig.setFormat(RecordConfig.RecordFormat.MP3);
+        recordConfig.setSampleRate(16000);
+        String recordDir = String.format(Locale.getDefault(), "%s/Record/com.zhongyao.mainnn/",
+                Environment.getExternalStorageDirectory().getAbsolutePath());
+        recordConfig.setRecordDir(recordDir);
+        AudioStatusManager.setCurrentConfig(recordConfig);
     }
 
     @Override

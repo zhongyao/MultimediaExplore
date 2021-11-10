@@ -6,15 +6,16 @@ import android.media.MediaRecorder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
+import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.util.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +48,9 @@ public class AudioRecorder {
 
     //录音文件
     private List<String> filesName = new ArrayList<>();
+
+    private AudioRecordThread recordThread;
+    private Mp3EncodeThread mp3EncodeThread;
 
 
     /**
@@ -103,24 +107,108 @@ public class AudioRecorder {
     public void startRecord(final RecordStreamListener listener) {
 
         if (TextUtils.isEmpty(fileName)) {
-            fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+//            fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+            fileName = FileUtil.getFilePath();
         }
         if (status == Status.STATUS_NO_READY /*|| TextUtils.isEmpty(fileName)*/) {
-            throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
+//            throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
         }
         if (status == Status.STATUS_START) {
             throw new IllegalStateException("正在录音");
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                audioRecord.startRecording();
-                writeDataTOFile(listener);
-            }
-        }).start();
+        //开启录制音频线程
+        recordThread = new AudioRecordThread(listener);
+        recordThread.start();
     }
+
+    private class AudioRecordThread extends Thread {
+
+        private RecordStreamListener listener;
+
+        public AudioRecordThread(RecordStreamListener listener) {
+            this.listener = listener;
+
+            if (true/*currentConfig.getFormat() == RecordConfig.RecordFormat.MP3*/) {
+                if (mp3EncodeThread == null) {
+                    initMp3EncoderThread(bufferSizeInBytes);
+                } else {
+                    Logger.e(TAG, "mp3EncodeThread != null, 请检查代码");
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            switch (AudioStatusManager.getCurrentConfig().getFormat()) {
+                case MP3:
+                    startMp3Recorder();
+                    break;
+                default:
+//                    startPcmRecorder();
+                    break;
+            }
+            //TODO 修改前
+//            audioRecord.startRecording();
+//            writeDataTOFile(listener);
+        }
+
+    }
+
+    private void startMp3Recorder() {
+        status = Status.STATUS_START;
+//            notifyState();
+
+        try {
+            audioRecord.startRecording();
+            short[] byteBuffer = new short[bufferSizeInBytes];
+
+            while (status == Status.STATUS_START) {
+                int end = audioRecord.read(byteBuffer, 0, byteBuffer.length);
+                if (mp3EncodeThread != null) {
+                    mp3EncodeThread.addChangeBuffer(new Mp3EncodeThread.ChangeBuffer(byteBuffer, end));
+                }
+//                notifyData(ByteUtils.toBytes(byteBuffer));
+            }
+            audioRecord.stop();
+        } catch (Exception e) {
+            Logger.e(e, TAG, e.getMessage());
+//            notifyError("录音失败");
+        }
+        if (status != Status.STATUS_PAUSE) {
+            status = Status.STATUS_NO_READY;
+//            notifyState();
+            stopMp3Encoded();
+        } else {
+            Logger.d(TAG, "暂停");
+        }
+    }
+
+    private void stopMp3Encoded() {
+        if (mp3EncodeThread != null) {
+            mp3EncodeThread.stopSafe(new Mp3EncodeThread.EncordFinishListener() {
+                @Override
+                public void onFinish() {
+//                    notifyFinish();
+                    mp3EncodeThread = null;
+                }
+            });
+        } else {
+            Logger.e(TAG, "mp3EncodeThread is null, 代码业务流程有误，请检查！！ ");
+        }
+    }
+
+    private void initMp3EncoderThread(int bufferSize) {
+        try {
+            mp3EncodeThread = new Mp3EncodeThread(new File(fileName), bufferSize);
+            mp3EncodeThread.start();
+        } catch (Exception e) {
+            Logger.e(e, TAG, e.getMessage());
+        }
+    }
+
 
     /**
      * 暂停录音

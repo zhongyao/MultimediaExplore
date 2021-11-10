@@ -1,16 +1,17 @@
-package com.zlw.main.recorderlib.recorder.mp3;
+package com.hongri.multimedia.audio.mp3;
 
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 
-import com.zlw.main.recorderlib.recorder.RecordConfig;
-import com.zlw.main.recorderlib.utils.FileUtils;
-import com.zlw.main.recorderlib.utils.Logger;
+import com.hongri.multimedia.audio.FileUtil;
+import com.hongri.multimedia.audio.state.RecordConfig;
+import com.hongri.multimedia.util.Logger;
 
 import java.io.IOException;
 
 /**
- * @author zhaolewei on 2018/8/3.
+ * Create by zhongyao on 2021/8/30
+ * Description:
  */
 public class Mp3Utils {
     private static final String TAG = Mp3Utils.class.getSimpleName();
@@ -22,7 +23,7 @@ public class Mp3Utils {
      * @return 时长
      */
     public static long getDuration(String mp3FilePath) {
-        if (!FileUtils.isFileExists(mp3FilePath)) {
+        if (!FileUtil.isFileExists(mp3FilePath)) {
             return 0;
         }
         if (!mp3FilePath.endsWith(RecordConfig.RecordFormat.MP3.getExtension())) {

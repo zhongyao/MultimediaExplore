@@ -1,7 +1,8 @@
-package com.zlw.main.recorderlib.recorder.mp3;
+package com.hongri.multimedia.audio.mp3;
 
 /**
- * @author zhaolewei on 2018/8/2.
+ * Create by zhongyao on 2021/8/30
+ * Description:
  */
 public class Mp3Encoder {
 

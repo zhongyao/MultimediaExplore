@@ -1,10 +1,12 @@
 package com.hongri.multimedia.audio.state;
 
 
+import android.content.Context;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.AudioRecorder;
 import com.hongri.multimedia.audio.RecordStreamListener;
+import com.hongri.multimedia.audio.service.RecordService;
 import com.hongri.multimedia.util.DoubleClickUtil;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +21,19 @@ public class AudioStatusManager {
     private static final String TAG = "AudioStatusManager";
     private static String fileName;
     private static RecordStreamListener listener = null;
+    private static Context mContext;
+
+    public static void init(Context context) {
+        mContext = context;
+    }
+
+    public static void setCurrentConfig(RecordConfig recordConfig) {
+        RecordService.setCurrentConfig(recordConfig);
+    }
+
+    public static RecordConfig getCurrentConfig() {
+        return RecordService.getCurrentConfig();
+    }
 
     public static void setStatus(Status curStatus) {
         Log.d(TAG, "curStatus:" + curStatus);
@@ -26,6 +41,10 @@ public class AudioStatusManager {
     }
 
     public static void setStatus(Status curStatus, Object object) {
+        if (mContext == null) {
+            Log.e(TAG, "AudioStatusManager not init");
+            return;
+        }
         switch (curStatus) {
             case STATUS_NO_READY:
 
@@ -38,7 +57,7 @@ public class AudioStatusManager {
                 } else {
                     fileName = "";
                 }
-                AudioRecorder.getInstance().createDefaultAudio(fileName);
+                RecordService.createDefaultAudio(mContext, fileName);
                 break;
 
             case STATUS_START:
@@ -47,23 +66,23 @@ public class AudioStatusManager {
                 } else {
                     listener = null;
                 }
-                AudioRecorder.getInstance().startRecord(listener);
+                RecordService.startRecording(mContext, listener);
                 break;
 
             case STATUS_PAUSE:
-                AudioRecorder.getInstance().pauseRecord();
+                RecordService.pauseRecording(mContext);
                 break;
 
             case STATUS_STOP:
-                AudioRecorder.getInstance().stopRecord();
+                RecordService.stopRecording(mContext);
                 break;
 
             case STATUS_CANCEL:
-                AudioRecorder.getInstance().cancel();
+                RecordService.cancelRecording(mContext);
                 break;
 
             case STATUS_RELEASE:
-                AudioRecorder.getInstance().releaseRecord();
+                RecordService.releaseRecord(mContext);
                 break;
 
             default:
@@ -72,6 +91,6 @@ public class AudioStatusManager {
     }
 
     public static Status getStatus() {
-        return AudioRecorder.getInstance().getStatus();
+        return RecordService.getState();
     }
 }

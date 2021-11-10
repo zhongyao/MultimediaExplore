@@ -1,19 +1,24 @@
-package com.zlw.main.recorderlib.recorder;
+package com.hongri.multimedia.audio.state;
 
 import android.media.AudioFormat;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * @author zhaolewei on 2018/7/11.
+ * Create by zhongyao on 2021/8/30
+ * Description:
  */
 public class RecordConfig implements Serializable {
+
+    private static final String TAG = "RecordConfig";
+
     /**
      * 录音格式 默认WAV格式
      */
-    private RecordFormat format = RecordFormat.WAV;
+    private RecordFormat format = RecordFormat.MP3;
     /**
      * 通道数:默认单通道
      */
@@ -30,7 +35,7 @@ public class RecordConfig implements Serializable {
     private int sampleRate = 16000;
 
     /*
-        * 录音文件存放路径，默认sdcard/Record
+     * 录音文件存放路径，默认sdcard/Record
      */
     private String recordDir = String.format(Locale.getDefault(),
             "%s/Record/",
@@ -62,10 +67,12 @@ public class RecordConfig implements Serializable {
 
 
     public String getRecordDir() {
+        Log.d(TAG, "getRecordDir --- :" + recordDir);
         return recordDir;
     }
 
     public void setRecordDir(String recordDir) {
+        Log.d(TAG, "setRecordDir --- :" + recordDir);
         this.recordDir = recordDir;
     }
 
@@ -75,7 +82,7 @@ public class RecordConfig implements Serializable {
      * @return 采样位宽 0: error
      */
     public int getEncoding() {
-        if(format == RecordFormat.MP3){//mp3后期转换
+        if (format == RecordFormat.MP3) {//mp3后期转换
             return 16;
         }
 
@@ -110,8 +117,10 @@ public class RecordConfig implements Serializable {
      */
     public int getChannelCount() {
         if (channelConfig == AudioFormat.CHANNEL_IN_MONO) {
+            //单声道
             return 1;
         } else if (channelConfig == AudioFormat.CHANNEL_IN_STEREO) {
+            //立体声
             return 2;
         } else {
             return 0;
@@ -139,7 +148,7 @@ public class RecordConfig implements Serializable {
     }
 
     public int getEncodingConfig() {
-        if(format == RecordFormat.MP3){//mp3后期转换
+        if (format == RecordFormat.MP3) {//mp3后期转换
             return AudioFormat.ENCODING_PCM_16BIT;
         }
         return encodingConfig;

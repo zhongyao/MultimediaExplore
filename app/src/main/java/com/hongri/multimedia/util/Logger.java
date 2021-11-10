@@ -1,4 +1,4 @@
-package com.zlw.main.recorderlib.utils;
+package com.hongri.multimedia.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,6 +10,10 @@ import android.util.Log;
 import java.io.File;
 import java.util.Locale;
 
+/**
+ * Create by zhongyao on 2021/8/30
+ * Description:
+ */
 public class Logger {
     private static final String PRE = "^_^";
     private static final String TAG = Logger.class.getSimpleName();

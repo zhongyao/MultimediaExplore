@@ -1,8 +1,8 @@
-package com.zlw.main.recorderlib.recorder.mp3;
+package com.hongri.multimedia.audio.mp3;
 
-import com.zlw.main.recorderlib.recorder.RecordConfig;
-import com.zlw.main.recorderlib.recorder.RecordService;
-import com.zlw.main.recorderlib.utils.Logger;
+import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.audio.state.RecordConfig;
+import com.hongri.multimedia.util.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author zhaolewei on 2018/8/2.
+ * Create by zhongyao on 2021/8/30
+ * Description:
  */
 public class Mp3EncodeThread extends Thread {
     private static final String TAG = Mp3EncodeThread.class.getSimpleName();
@@ -36,11 +37,12 @@ public class Mp3EncodeThread extends Thread {
     public Mp3EncodeThread(File file, int bufferSize) {
         this.file = file;
         mp3Buffer = new byte[(int) (7200 + (bufferSize * 2 * 1.25))];
-        RecordConfig currentConfig = RecordService.getCurrentConfig();
+//        RecordConfig currentConfig = RecordService.getCurrentConfig();
+        RecordConfig currentConfig = AudioStatusManager.getCurrentConfig();
         int sampleRate = currentConfig.getSampleRate();
 
-        Logger.w(TAG, "in_sampleRate:%s，getChannelCount:%s ，out_sampleRate：%s 位宽： %s,",
-                sampleRate, currentConfig.getChannelCount(), sampleRate, currentConfig.getRealEncoding());
+        Logger.d(TAG, "format:%s，in_sampleRate:%s，getChannelCount:%s ，out_sampleRate：%s 位宽： %s,",
+                currentConfig.getFormat().getExtension(), sampleRate, currentConfig.getChannelCount(), sampleRate, currentConfig.getRealEncoding());
         Mp3Encoder.init(sampleRate, currentConfig.getChannelCount(), sampleRate, currentConfig.getRealEncoding());
     }
 

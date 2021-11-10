@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioFormat;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -19,9 +21,12 @@ import androidx.annotation.Nullable;
 
 import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.DataUtil;
 import com.hongri.multimedia.util.DateUtil;
+
+import java.util.Locale;
 
 /**
  * Create by zhongyao on 2021/8/17
@@ -38,6 +43,7 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
     private final long RECORD_BORDER_TIME = 1000;
     final Object mLock = new Object();
     private boolean isPressed;
+    private RecordConfig recordConfig = new RecordConfig();
 
     private static final String TAG = "RecordLayout";
 
@@ -244,4 +250,7 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
 //        }
     }
 
+    public void setRecordConfig(RecordConfig recordConfig) {
+        this.recordConfig = recordConfig;
+    }
 }

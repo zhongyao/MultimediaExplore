@@ -3,15 +3,23 @@ package com.hongri.multimedia.audio;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.hongri.multimedia.audio.state.AudioStatusManager;
+import com.hongri.multimedia.util.Logger;
+
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Create by zhongyao on 2021/8/17
  * Description: 管理音频文件
  */
 public class FileUtil {
+
+    private static final String TAG = "FileUtil";
 
     private static String rootPath = "pauseRecordDemo";
     //原始文件(不能播放)
@@ -22,6 +30,90 @@ public class FileUtil {
     private static void setRootPath(String rootPath) {
         FileUtil.rootPath = rootPath;
     }
+
+    /**
+     * 根据当前的时间生成相应的文件名
+     * 实例 record_20160101_13_15_12
+     */
+    public static String getFilePath() {
+        String fileDir = AudioStatusManager.getCurrentConfig().getRecordDir();
+        if (!FileUtil.createOrExistsDir(fileDir)) {
+            Logger.w(TAG, "文件夹创建失败：%s", fileDir);
+            return null;
+        }
+        String fileName = String.format(Locale.getDefault(), "record_%s", FileUtil.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
+        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, AudioStatusManager.getCurrentConfig().getFormat().getExtension());
+    }
+
+    public static boolean isFile(final File file) {
+        return file != null && file.exists() && file.isFile();
+    }
+
+    /**
+     * Create a directory if it doesn't exist, otherwise do nothing.
+     *
+     * @param dirPath The path of directory.
+     * @return {@code true}: exists or creates successfully<br>{@code false}: otherwise
+     */
+    public static boolean createOrExistsDir(final String dirPath) {
+        return createOrExistsDir(getFileByPath(dirPath));
+    }
+
+    public static boolean createOrExistsDir(final File file) {
+        return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
+    }
+
+    public static File getFileByPath(final String filePath) {
+        return isSpace(filePath) ? null : new File(filePath);
+    }
+
+    private static boolean isSpace(final String s) {
+        if (s == null) {
+            return true;
+        }
+        for (int i = 0, len = s.length(); i < len; ++i) {
+            if (!Character.isWhitespace(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String getNowString(final java.text.DateFormat format) {
+        return millis2String(System.currentTimeMillis(), format);
+    }
+
+    /**
+     * Milliseconds to the formatted time string.
+     *
+     * @param millis The milliseconds.
+     * @param format The format.
+     * @return the formatted time string
+     */
+    public static String millis2String(final long millis, final java.text.DateFormat format) {
+        return format.format(new Date(millis));
+    }
+
+    /**
+     * Return whether the file exists.
+     *
+     * @param filePath The path of file.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isFileExists(final String filePath) {
+        return isFileExists(getFileByPath(filePath));
+    }
+
+    /**
+     * Return whether the file exists.
+     *
+     * @param file The file.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isFileExists(final File file) {
+        return file != null && file.exists();
+    }
+
 
     public static String getPcmFileAbsolutePath(String fileName) {
         if (TextUtils.isEmpty(fileName)) {

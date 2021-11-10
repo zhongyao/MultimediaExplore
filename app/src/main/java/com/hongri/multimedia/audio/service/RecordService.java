@@ -1,4 +1,4 @@
-package com.zlw.main.recorderlib.recorder;
+package com.hongri.multimedia.audio.service;
 
 import android.app.Service;
 import android.content.Context;
@@ -6,21 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import com.zlw.main.recorderlib.recorder.listener.RecordDataListener;
-import com.zlw.main.recorderlib.recorder.listener.RecordFftDataListener;
-import com.zlw.main.recorderlib.recorder.listener.RecordResultListener;
-import com.zlw.main.recorderlib.recorder.listener.RecordSoundSizeListener;
-import com.zlw.main.recorderlib.recorder.listener.RecordStateListener;
-import com.zlw.main.recorderlib.utils.FileUtils;
-import com.zlw.main.recorderlib.utils.Logger;
+import com.hongri.multimedia.audio.AudioRecorder;
+import com.hongri.multimedia.audio.FileUtil;
+import com.hongri.multimedia.audio.RecordStreamListener;
+import com.hongri.multimedia.audio.state.RecordConfig;
+import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.util.Logger;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.io.File;
 
 /**
- * 录音服务
- *
- * @author zhaolewei
+ * Create by zhongyao on 2021/8/30
+ * Description: 录音服务
  */
 public class RecordService extends Service {
     private static final String TAG = RecordService.class.getSimpleName();
@@ -28,7 +25,7 @@ public class RecordService extends Service {
     /**
      * 录音配置
      */
-    private static RecordConfig currentConfig = new RecordConfig();
+    private static RecordConfig currentConfig /*= new RecordConfig()*/;
 
     private final static String ACTION_NAME = "action_type";
 
@@ -42,7 +39,16 @@ public class RecordService extends Service {
 
     private final static int ACTION_PAUSE_RECORD = 4;
 
+    private final static int ACTION_CANCEL_RECORD = 5;
+
+    private final static int ACTION_RELEASE_RECORD = 6;
+
+    private final static int ACTION_CREATE_DEFAULT_RECORD = 10;
+
     private final static String PARAM_PATH = "path";
+
+    private final static String STREAM_LISTENER = "stream_listener";
+    private static RecordStreamListener streamListener;
 
 
     public RecordService() {
@@ -61,6 +67,9 @@ public class RecordService extends Service {
         Bundle bundle = intent.getExtras();
         if (bundle != null && bundle.containsKey(ACTION_NAME)) {
             switch (bundle.getInt(ACTION_NAME, ACTION_INVALID)) {
+                case ACTION_CREATE_DEFAULT_RECORD:
+                    doCreateDefaultAudio(bundle.getString(PARAM_PATH));
+                    break;
                 case ACTION_START_RECORD:
                     doStartRecording(bundle.getString(PARAM_PATH));
                     break;
@@ -73,6 +82,12 @@ public class RecordService extends Service {
                 case ACTION_PAUSE_RECORD:
                     doPauseRecording();
                     break;
+                case ACTION_CANCEL_RECORD:
+                    doCancelRecording();
+                    break;
+                case ACTION_RELEASE_RECORD:
+                    doReleaseRecording();
+                    break;
                 default:
                     break;
             }
@@ -82,17 +97,31 @@ public class RecordService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public static void createDefaultAudio(Context context, String fileName) {
+        Intent intent = new Intent(context, RecordService.class);
+        intent.putExtra(ACTION_NAME, ACTION_CREATE_DEFAULT_RECORD);
+        intent.putExtra(PARAM_PATH, FileUtil.getFilePath());
+        context.startService(intent);
+    }
 
-    public static void startRecording(Context context) {
+    //TODO listener 处理 , getFilePath
+    public static void startRecording(Context context, RecordStreamListener listener) {
+        streamListener = listener;
         Intent intent = new Intent(context, RecordService.class);
         intent.putExtra(ACTION_NAME, ACTION_START_RECORD);
-        intent.putExtra(PARAM_PATH, getFilePath());
+        intent.putExtra(PARAM_PATH, FileUtil.getFilePath());
         context.startService(intent);
     }
 
     public static void stopRecording(Context context) {
         Intent intent = new Intent(context, RecordService.class);
         intent.putExtra(ACTION_NAME, ACTION_STOP_RECORD);
+        context.startService(intent);
+    }
+
+    public static void cancelRecording(Context context) {
+        Intent intent = new Intent(context, RecordService.class);
+        intent.putExtra(ACTION_NAME, ACTION_CANCEL_RECORD);
         context.startService(intent);
     }
 
@@ -108,35 +137,33 @@ public class RecordService extends Service {
         context.startService(intent);
     }
 
+    public static void releaseRecord(Context context) {
+        Intent intent = new Intent(context, RecordService.class);
+        intent.putExtra(ACTION_NAME, ACTION_RELEASE_RECORD);
+        context.startService(intent);
+    }
+
     /**
      * 改变录音格式
      */
-    public static boolean changeFormat(RecordConfig.RecordFormat recordFormat) {
-        if (getState() == RecordHelper.RecordState.IDLE) {
-            currentConfig.setFormat(recordFormat);
-            return true;
-        }
-        return false;
-    }
+//    public static boolean changeFormat(RecordConfig.RecordFormat recordFormat) {
+//        if (getState() == RecordHelper.RecordState.IDLE) {
+//            currentConfig.setFormat(recordFormat);
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * 改变录音配置
      */
-    public static boolean changeRecordConfig(RecordConfig recordConfig) {
-        if (getState() == RecordHelper.RecordState.IDLE) {
-            currentConfig = recordConfig;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 获取录音配置参数
-     */
-    public static RecordConfig getRecordConfig() {
-        return currentConfig;
-    }
-
+//    public static boolean changeRecordConfig(RecordConfig recordConfig) {
+//        if (getState() == RecordHelper.RecordState.IDLE) {
+//            currentConfig = recordConfig;
+//            return true;
+//        }
+//        return false;
+//    }
     public static void changeRecordDir(String recordDir) {
         currentConfig.setRecordDir(recordDir);
     }
@@ -144,49 +171,62 @@ public class RecordService extends Service {
     /**
      * 获取当前的录音状态
      */
-    public static RecordHelper.RecordState getState() {
-        return RecordHelper.getInstance().getState();
+    public static Status getState() {
+        return AudioRecorder.getInstance().getStatus();
     }
+//
+//    public static void setRecordStateListener(RecordStateListener recordStateListener) {
+//        RecordHelper.getInstance().setRecordStateListener(recordStateListener);
+//    }
+//
+//    public static void setRecordDataListener(RecordDataListener recordDataListener) {
+//        RecordHelper.getInstance().setRecordDataListener(recordDataListener);
+//    }
+//
+//    public static void setRecordSoundSizeListener(RecordSoundSizeListener recordSoundSizeListener) {
+//        RecordHelper.getInstance().setRecordSoundSizeListener(recordSoundSizeListener);
+//    }
+//
+//    public static void setRecordResultListener(RecordResultListener recordResultListener) {
+//        RecordHelper.getInstance().setRecordResultListener(recordResultListener);
+//    }
+//
+//    public static void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
+//        RecordHelper.getInstance().setRecordFftDataListener(recordFftDataListener);
+//    }
 
-    public static void setRecordStateListener(RecordStateListener recordStateListener) {
-        RecordHelper.getInstance().setRecordStateListener(recordStateListener);
-    }
-
-    public static void setRecordDataListener(RecordDataListener recordDataListener) {
-        RecordHelper.getInstance().setRecordDataListener(recordDataListener);
-    }
-
-    public static void setRecordSoundSizeListener(RecordSoundSizeListener recordSoundSizeListener) {
-        RecordHelper.getInstance().setRecordSoundSizeListener(recordSoundSizeListener);
-    }
-
-    public static void setRecordResultListener(RecordResultListener recordResultListener) {
-        RecordHelper.getInstance().setRecordResultListener(recordResultListener);
-    }
-
-    public static void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
-        RecordHelper.getInstance().setRecordFftDataListener(recordFftDataListener);
+    private void doCreateDefaultAudio(String path) {
+        AudioRecorder.getInstance().createDefaultAudio(path);
     }
 
     private void doStartRecording(String path) {
         Logger.v(TAG, "doStartRecording path: %s", path);
-        RecordHelper.getInstance().start(path, currentConfig);
+        AudioRecorder.getInstance().startRecord(streamListener);
     }
 
+    //TODO
     private void doResumeRecording() {
         Logger.v(TAG, "doResumeRecording");
-        RecordHelper.getInstance().resume();
+//        RecordHelper.getInstance().resume();
     }
 
     private void doPauseRecording() {
         Logger.v(TAG, "doResumeRecording");
-        RecordHelper.getInstance().pause();
+        AudioRecorder.getInstance().pauseRecord();
+    }
+
+    private void doCancelRecording() {
+        AudioRecorder.getInstance().cancel();
     }
 
     private void doStopRecording() {
         Logger.v(TAG, "doStopRecording");
-        RecordHelper.getInstance().stop();
+        AudioRecorder.getInstance().stopRecord();
         stopSelf();
+    }
+
+    private void doReleaseRecording() {
+        AudioRecorder.getInstance().releaseRecord();
     }
 
     public static RecordConfig getCurrentConfig() {
@@ -196,22 +236,4 @@ public class RecordService extends Service {
     public static void setCurrentConfig(RecordConfig currentConfig) {
         RecordService.currentConfig = currentConfig;
     }
-
-    /**
-     * 根据当前的时间生成相应的文件名
-     * 实例 record_20160101_13_15_12
-     */
-    private static String getFilePath() {
-
-        String fileDir =
-                currentConfig.getRecordDir();
-        if (!FileUtils.createOrExistsDir(fileDir)) {
-            Logger.w(TAG, "文件夹创建失败：%s", fileDir);
-            return null;
-        }
-        String fileName = String.format(Locale.getDefault(), "record_%s", FileUtils.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
-        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, currentConfig.getFormat().getExtension());
-    }
-
-
 }
