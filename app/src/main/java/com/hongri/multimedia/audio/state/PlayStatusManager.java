@@ -61,7 +61,6 @@ public class PlayStatusManager {
     }
 
     public static Status getStatus() {
-        //TODO
         return AudioPlayer.getInstance().getStatus();
     }
 

@@ -60,7 +60,6 @@ public class VideoStatusManager {
     }
 
     public static Status getStatus() {
-        //TODO
         return VideoPlayer.getInstance().getStatus();
     }
 

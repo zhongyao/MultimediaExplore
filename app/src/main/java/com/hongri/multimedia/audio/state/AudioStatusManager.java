@@ -4,13 +4,14 @@ package com.hongri.multimedia.audio.state;
 import android.content.Context;
 import android.util.Log;
 
+import com.hongri.multimedia.audio.AudioRecorder;
+import com.hongri.multimedia.audio.FileUtil;
 import com.hongri.multimedia.audio.RecordStreamListener;
 import com.hongri.multimedia.audio.listener.RecordDataListener;
 import com.hongri.multimedia.audio.listener.RecordFftDataListener;
 import com.hongri.multimedia.audio.listener.RecordResultListener;
 import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
-import com.hongri.multimedia.audio.service.RecordService;
 
 /**
  * Create by zhongyao on 2021/8/18
@@ -28,46 +29,46 @@ public class AudioStatusManager {
     }
 
     public static void setCurrentConfig(RecordConfig recordConfig) {
-        RecordService.setCurrentConfig(recordConfig);
+        AudioRecorder.getInstance().setCurrentConfig(recordConfig);
     }
 
     public static RecordConfig getCurrentConfig() {
-        return RecordService.getCurrentConfig();
+        return AudioRecorder.getInstance().getCurrentConfig();
     }
 
     /**
      * 录音状态监听回调
      */
     public void setRecordStateListener(RecordStateListener listener) {
-        RecordService.setRecordStateListener(listener);
+        AudioRecorder.getInstance().setRecordStateListener(listener);
     }
 
     /**
      * 录音数据监听回调
      */
     public void setRecordDataListener(RecordDataListener listener) {
-        RecordService.setRecordDataListener(listener);
+        AudioRecorder.getInstance().setRecordDataListener(listener);
     }
 
     /**
      * 录音可视化数据回调，傅里叶转换后的频域数据
      */
     public void setRecordFftDataListener(RecordFftDataListener recordFftDataListener) {
-        RecordService.setRecordFftDataListener(recordFftDataListener);
+        AudioRecorder.getInstance().setRecordFftDataListener(recordFftDataListener);
     }
 
     /**
      * 录音文件转换结束回调
      */
     public void setRecordResultListener(RecordResultListener listener) {
-        RecordService.setRecordResultListener(listener);
+        AudioRecorder.getInstance().setRecordResultListener(listener);
     }
 
     /**
      * 录音音量监听回调
      */
     public void setRecordSoundSizeListener(RecordSoundSizeListener listener) {
-        RecordService.setRecordSoundSizeListener(listener);
+        AudioRecorder.getInstance().setRecordSoundSizeListener(listener);
     }
 
     public static void setStatus(Status curStatus) {
@@ -92,7 +93,7 @@ public class AudioStatusManager {
                 } else {
                     fileName = "";
                 }
-                RecordService.createDefaultAudio(mContext, fileName);
+                AudioRecorder.getInstance().createDefaultAudio(FileUtil.getFilePath());
                 break;
 
             case STATUS_START:
@@ -101,23 +102,23 @@ public class AudioStatusManager {
                 } else {
                     listener = null;
                 }
-                RecordService.startRecording(mContext, listener);
+                AudioRecorder.getInstance().startRecord(listener);
                 break;
 
             case STATUS_PAUSE:
-                RecordService.pauseRecording(mContext);
+                AudioRecorder.getInstance().pauseRecord();
                 break;
 
             case STATUS_STOP:
-                RecordService.stopRecording(mContext);
+                AudioRecorder.getInstance().stopRecord();
                 break;
 
             case STATUS_CANCEL:
-                RecordService.cancelRecording(mContext);
+                AudioRecorder.getInstance().cancel();
                 break;
 
             case STATUS_RELEASE:
-                RecordService.releaseRecord(mContext);
+                AudioRecorder.getInstance().releaseRecord();
                 break;
 
             default:
@@ -126,6 +127,6 @@ public class AudioStatusManager {
     }
 
     public static Status getStatus() {
-        return RecordService.getState();
+        return AudioRecorder.getInstance().getStatus();
     }
 }

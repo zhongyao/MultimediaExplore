@@ -239,15 +239,6 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
                 recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, (recordBtnWidth / 3) + (float) volume * 3);
             }
         });
-
-        //TODO 此操作，会引起录音内容不全
-//        synchronized (mLock) {
-//            try {
-//                mLock.wait(100); // 一秒十次
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     @Override

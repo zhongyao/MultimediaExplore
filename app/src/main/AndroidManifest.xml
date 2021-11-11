@@ -38,11 +38,6 @@
             </intent-filter>
             -->
         </activity>
-
-        <service
-            android:name=".audio.service.RecordService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>
