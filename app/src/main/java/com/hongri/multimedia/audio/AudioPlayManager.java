@@ -1,4 +1,4 @@
-package com.hongri.multimedia.audio.state;
+package com.hongri.multimedia.audio;
 
 import android.content.Context;
 import android.net.Uri;
@@ -6,12 +6,13 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.AudioPlayer;
+import com.hongri.multimedia.audio.state.Status;
 
 /**
  * Create by zhongyao on 2021/8/30
  * Description:
  */
-public class PlayStatusManager {
+public class AudioPlayManager {
 
     private static final String TAG = "PlayStatusManager";
     private static Uri uri;

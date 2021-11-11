@@ -1,4 +1,4 @@
-package com.hongri.multimedia;
+package com.hongri.multimedia.util;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;

@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".audio.AudioActivity">
+        <activity android:name=".AudioActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

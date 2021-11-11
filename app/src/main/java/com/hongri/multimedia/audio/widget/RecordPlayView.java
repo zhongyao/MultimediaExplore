@@ -2,7 +2,6 @@ package com.hongri.multimedia.audio.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.media.AudioFormat;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -18,16 +17,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.AudioPlayer;
-import com.hongri.multimedia.audio.state.PlayStatusManager;
-import com.hongri.multimedia.audio.state.RecordConfig;
+import com.hongri.multimedia.audio.AudioPlayManager;
 import com.hongri.multimedia.audio.state.Status;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Create by zhongyao on 2021/8/24
@@ -153,7 +148,7 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
     }
 
     private void init(Uri uri) {
-        PlayStatusManager.setStatus(getContext(), handler, Status.STATUS_READY, uri);
+        AudioPlayManager.setStatus(getContext(), handler, Status.STATUS_READY, uri);
     }
 
     @Override
@@ -196,7 +191,7 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
         Log.d(TAG, "onTouch");
         int id = v.getId();
         if (id == R.id.playIv) {
-            PlayStatusManager.setStatus(Status.STATUS_START);
+            AudioPlayManager.setStatus(Status.STATUS_START);
             return true;
         }
         return false;

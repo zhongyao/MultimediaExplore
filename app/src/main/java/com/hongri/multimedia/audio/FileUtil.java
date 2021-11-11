@@ -3,7 +3,6 @@ package com.hongri.multimedia.audio;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.hongri.multimedia.audio.state.AudioStatusManager;
 import com.hongri.multimedia.util.Logger;
 
 import java.io.File;
@@ -36,13 +35,13 @@ public class FileUtil {
      * 实例 record_20160101_13_15_12
      */
     public static String getFilePath() {
-        String fileDir = AudioStatusManager.getCurrentConfig().getRecordDir();
+        String fileDir = RecordManager.getCurrentConfig().getRecordDir();
         if (!FileUtil.createOrExistsDir(fileDir)) {
             Logger.w(TAG, "文件夹创建失败：%s", fileDir);
             return null;
         }
         String fileName = String.format(Locale.getDefault(), "record_%s", FileUtil.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
-        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, AudioStatusManager.getCurrentConfig().getFormat().getExtension());
+        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, RecordManager.getCurrentConfig().getFormat().getExtension());
     }
 
     /**

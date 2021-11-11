@@ -1,17 +1,17 @@
-package com.hongri.multimedia.audio.state;
+package com.hongri.multimedia.video;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.hongri.multimedia.audio.VideoPlayer;
+import com.hongri.multimedia.audio.state.Status;
 
 /**
  * Create by zhongyao on 2021/8/30
  * Description:
  */
-public class VideoStatusManager {
+public class VideoPlayManager {
     private static final String TAG = "VideoStatusManager";
     private static Uri uri;
 

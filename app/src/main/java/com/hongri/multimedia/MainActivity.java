@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.hongri.multimedia.audio.AudioActivity;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button audioBtn, videoBtn;

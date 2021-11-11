@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.hongri.multimedia.R;
-import com.hongri.multimedia.audio.VideoPlayer;
+import com.hongri.multimedia.video.VideoPlayer;
 
 
 /**

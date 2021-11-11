@@ -1,23 +1,23 @@
-package com.hongri.multimedia.audio.state;
+package com.hongri.multimedia.audio;
 
 
 import android.content.Context;
 import android.util.Log;
 
-import com.hongri.multimedia.audio.AudioRecorder;
-import com.hongri.multimedia.audio.FileUtil;
-import com.hongri.multimedia.audio.RecordStreamListener;
+import com.hongri.multimedia.audio.listener.RecordStreamListener;
 import com.hongri.multimedia.audio.listener.RecordDataListener;
 import com.hongri.multimedia.audio.listener.RecordFftDataListener;
 import com.hongri.multimedia.audio.listener.RecordResultListener;
 import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
+import com.hongri.multimedia.audio.state.RecordConfig;
+import com.hongri.multimedia.audio.state.Status;
 
 /**
  * Create by zhongyao on 2021/8/18
  * Description:
  */
-public class AudioStatusManager {
+public class RecordManager {
 
     private static final String TAG = "AudioStatusManager";
     private static String fileName;
