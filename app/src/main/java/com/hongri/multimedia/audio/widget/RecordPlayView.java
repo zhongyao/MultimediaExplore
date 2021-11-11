@@ -45,7 +45,8 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
     private float progressBarTopY, progressBarBottomY, progressBarHeight;
     private long currentPosition, contentPosition, contentBufferedPosition;
 
-    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
+    //    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "pauseRecordDemo" + "/wav/" + "20210830045802.wav";
+    private String audioUrl = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "Record" + "/zhongyao/" + "record_20211110_19_25_41.mp3";
 //    private String audioUrl = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
 //    private String audioUrl = "http://192.168.1.102:1231/music/a.mp3";
 //    private String audioUrl = "https://www.twle.cn/static/i/song.mp3";
@@ -138,6 +139,11 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
                 playIv.setOnTouchListener(this);
             }
 
+            if (audioUrl.startsWith("http") || audioUrl.startsWith("https")) {
+                AudioPlayer.isLocalResource = false;
+            } else {
+                AudioPlayer.isLocalResource = true;
+            }
             init(Uri.parse(audioUrl));
 
             if (progressBar != null && currentPlayTime != null) {
