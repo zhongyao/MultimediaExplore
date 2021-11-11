@@ -7,7 +7,7 @@
     android:padding="20dp"
     tools:context=".VideoActivity">
 
-    <com.hongri.multimedia.audio.widget.VideoPlayView
+    <com.hongri.multimedia.video.widget.VideoPlayView
         android:id="@+id/videoPlayView"
         android:layout_width="match_parent"
         android:layout_height="300dp"/>

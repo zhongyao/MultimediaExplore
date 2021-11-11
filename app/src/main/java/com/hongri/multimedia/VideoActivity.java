@@ -3,7 +3,7 @@ package com.hongri.multimedia;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import com.hongri.multimedia.audio.widget.VideoPlayView;
+import com.hongri.multimedia.video.widget.VideoPlayView;
 
 public class VideoActivity extends AppCompatActivity {
 

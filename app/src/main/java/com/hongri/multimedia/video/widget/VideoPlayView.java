@@ -1,4 +1,4 @@
-package com.hongri.multimedia.audio.widget;
+package com.hongri.multimedia.video.widget;
 
 import android.content.Context;
 import android.net.Uri;

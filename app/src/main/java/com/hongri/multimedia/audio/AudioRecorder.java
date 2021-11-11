@@ -166,7 +166,7 @@ public class AudioRecorder {
             fileName = FileUtil.getFilePath();
         }
         if (status == Status.STATUS_NO_READY) {
-            throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
+//            throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
         }
         if (status == Status.STATUS_START) {
             throw new IllegalStateException("正在录音");
