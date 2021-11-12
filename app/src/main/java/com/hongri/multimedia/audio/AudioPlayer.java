@@ -98,9 +98,11 @@ public class AudioPlayer {
                     msgOuter.what = WHAT_POSITION;
                     msgOuter.obj = hashMap;
                     handler.sendMessage(msgOuter);
-                    sendEmptyMessageDelayed(WHAT_POSITION, 300);
+                    if (currentPosition < duration) {
+                        sendEmptyMessageDelayed(WHAT_POSITION, 300);
+                    }
                 } else if (msg.what == WHAT_DURATION) {
-                    msgOuter.obj = (long) msg.obj;
+                    msgOuter.obj = msg.obj;
                     handler.sendMessage(msgOuter);
                 }
             }

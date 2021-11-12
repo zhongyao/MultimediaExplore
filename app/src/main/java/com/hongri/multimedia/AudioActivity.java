@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
+import com.hongri.multimedia.audio.AudioModeManager;
 import com.hongri.multimedia.audio.RecordManager;
 import com.hongri.multimedia.util.AppUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
@@ -36,6 +38,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     private RecordPlayView recordPlayView;
     private boolean permissionGranted = false;
     private int phoneWidth;
+    private TextView audioModeBtn;
     private RecordConfig recordConfig;
     private static String[] PERMISSION_ALL = {
             Manifest.permission.RECORD_AUDIO,
@@ -59,6 +62,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         recordView = findViewById(R.id.recordLayout);
         recordBtn = findViewById(R.id.recordBtn);
         recordPlayView = findViewById(R.id.recordPlayView);
+        audioModeBtn = findViewById(R.id.audioMode);
 
         start.setOnClickListener(this);
         pause.setOnClickListener(this);
@@ -66,7 +70,9 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         stop.setOnClickListener(this);
         recordView.setOnClickListener(this);
         recordBtn.setOnClickListener(this);
+        audioModeBtn.setOnClickListener(this);
 
+        AudioModeManager.getInstance().init(getApplication());
         initConfig();
 
         recordView.setPhoneWidth(this, phoneWidth);
@@ -125,6 +131,20 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.recordBtn:
 
+                break;
+
+            case R.id.audioMode:
+                if (AudioModeManager.getInstance().isSpeakerOn()) {
+                    //听筒
+                    AudioModeManager.getInstance().setSpeakerOn(false);
+                    audioModeBtn.setText("听筒");
+                    Toast.makeText(this, "已切换至听筒模式", Toast.LENGTH_SHORT).show();
+                } else {
+                    //扬声器
+                    AudioModeManager.getInstance().setSpeakerOn(true);
+                    audioModeBtn.setText("扬声器");
+                    Toast.makeText(this, "已切换至扬声器模式", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             default:

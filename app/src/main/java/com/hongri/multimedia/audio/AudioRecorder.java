@@ -97,7 +97,7 @@ public class AudioRecorder {
         /**
          * 静态初始化器，由JVM来保证线程安全
          */
-        private static AudioRecorder instance = new AudioRecorder();
+        private static final AudioRecorder instance = new AudioRecorder();
     }
 
     private AudioRecorder() {
