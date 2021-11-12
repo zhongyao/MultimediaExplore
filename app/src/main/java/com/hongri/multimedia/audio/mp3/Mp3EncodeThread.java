@@ -1,6 +1,6 @@
 package com.hongri.multimedia.audio.mp3;
 
-import com.hongri.multimedia.audio.RecordManager;
+import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.util.Logger;
 
@@ -37,7 +37,7 @@ public class Mp3EncodeThread extends Thread {
     public Mp3EncodeThread(File file, int bufferSize) {
         this.file = file;
         mp3Buffer = new byte[(int) (7200 + (bufferSize * 2 * 1.25))];
-        RecordConfig currentConfig = RecordManager.getCurrentConfig();
+        RecordConfig currentConfig = AudioRecordManager.getCurrentConfig();
         int sampleRate = currentConfig.getSampleRate();
 
         Logger.d(TAG, "format:%s，in_sampleRate:%s，getChannelCount:%s ，out_sampleRate：%s 位宽： %s,",

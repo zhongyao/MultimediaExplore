@@ -63,15 +63,14 @@ public class AudioModeManager {
                     int state = intent.getIntExtra("state", 0);
                     if (state == 1) {
                         playMode = Headset;
-                        changeMode();
                     } else if (state == 0) {
                         if (isSpeakerOn()) {
                             playMode = Speaker;
                         } else {
                             playMode = Receiver;
                         }
-                        changeMode();
                     }
+                    changeMode(playMode);
                 }
             }
 
@@ -105,7 +104,7 @@ public class AudioModeManager {
             } else {
                 playMode = Receiver;
             }
-            changeMode();
+            changeMode(playMode);
         }
     }
 
@@ -140,7 +139,7 @@ public class AudioModeManager {
     /**
      * 更换模式
      */
-    private void changeMode() {
+    public void changeMode(PlayMode playMode) {
 //        if (!isPlaying) {
 //            return;
 //        }
@@ -171,7 +170,7 @@ public class AudioModeManager {
     public void onPlay() {
         isPlaying = true;
         audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        changeMode();
+        changeMode(playMode);
     }
 
     /**
@@ -181,5 +180,18 @@ public class AudioModeManager {
         isPlaying = false;
         audioManager.abandonAudioFocus(null);
         audioManager.setMode(AudioManager.MODE_NORMAL);
+    }
+
+
+    /**
+     * 耳机是否插入
+     *
+     * @return
+     */
+    public boolean isWiredHeadsetOn() {
+        if (audioManager == null) {
+            return false;
+        }
+        return audioManager.isWiredHeadsetOn();
     }
 }

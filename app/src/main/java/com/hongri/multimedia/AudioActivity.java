@@ -14,7 +14,8 @@ import android.widget.Toast;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hongri.multimedia.audio.AudioModeManager;
-import com.hongri.multimedia.audio.RecordManager;
+import com.hongri.multimedia.audio.AudioRecordManager;
+import com.hongri.multimedia.audio.SensorModeManager;
 import com.hongri.multimedia.util.AppUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
@@ -51,7 +52,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
 
-        RecordManager.init(this);
+        AudioRecordManager.init(this);
 
         phoneWidth = AppUtil.getPhoneWidth(this);
 
@@ -72,7 +73,11 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         recordBtn.setOnClickListener(this);
         audioModeBtn.setOnClickListener(this);
 
+        //初始化音频播放切换模式管理类
         AudioModeManager.getInstance().init(getApplication());
+        //初始化感应息/亮屏模式管理类
+//        SensorModeManager.getInstance().init(getApplication());
+
         initConfig();
 
         recordView.setPhoneWidth(this, phoneWidth);
@@ -83,7 +88,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     permissionGranted = true;
-                    RecordManager.setStatus(Status.STATUS_READY);
+                    AudioRecordManager.setStatus(Status.STATUS_READY);
                 }
 
             }
@@ -99,7 +104,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         String recordDir = String.format(Locale.getDefault(), "%s/Record/zhongyao/",
                 Environment.getExternalStorageDirectory().getAbsolutePath());
         recordConfig.setRecordDir(recordDir);
-        RecordManager.setCurrentConfig(recordConfig);
+        AudioRecordManager.setCurrentConfig(recordConfig);
     }
 
     @Override
@@ -111,19 +116,19 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         int id = v.getId();
         switch (id) {
             case R.id.start:
-                RecordManager.setStatus(Status.STATUS_START);
+                AudioRecordManager.setStatus(Status.STATUS_START);
                 break;
 
             case R.id.pause:
-                RecordManager.setStatus(Status.STATUS_PAUSE);
+                AudioRecordManager.setStatus(Status.STATUS_PAUSE);
                 break;
 
             case R.id.cancel:
-                RecordManager.setStatus(Status.STATUS_CANCEL);
+                AudioRecordManager.setStatus(Status.STATUS_CANCEL);
                 break;
 
             case R.id.stop:
-                RecordManager.setStatus(Status.STATUS_STOP);
+                AudioRecordManager.setStatus(Status.STATUS_STOP);
                 break;
 
             case R.id.recordLayout:
@@ -155,7 +160,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        RecordManager.setStatus(Status.STATUS_RELEASE);
+        AudioRecordManager.setStatus(Status.STATUS_RELEASE);
         if (recordPlayView != null) {
             recordPlayView.onRelease();
         }

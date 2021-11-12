@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.hongri.multimedia.audio.AudioPlayer;
 import com.hongri.multimedia.audio.state.Status;
 
 /**
@@ -61,11 +60,28 @@ public class AudioPlayManager {
         }
     }
 
+    /**
+     * 获取音频播状态
+     * @return
+     */
     public static Status getStatus() {
         return AudioPlayer.getInstance().getStatus();
     }
 
+    /**
+     * 获取音频时长
+     * @return
+     */
     public static long getDuration() {
         return AudioPlayer.getInstance().getDuration();
     }
+
+    /**
+     * 音频是否正在播放
+     * @return
+     */
+    public static boolean isPlaying() {
+        return getStatus() == Status.STATUS_START;
+    }
+
 }

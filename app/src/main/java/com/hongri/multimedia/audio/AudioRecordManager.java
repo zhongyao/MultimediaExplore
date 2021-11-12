@@ -17,7 +17,7 @@ import com.hongri.multimedia.audio.state.Status;
  * Create by zhongyao on 2021/8/18
  * Description:
  */
-public class RecordManager {
+public class AudioRecordManager {
 
     private static final String TAG = "AudioStatusManager";
     private static String fileName;

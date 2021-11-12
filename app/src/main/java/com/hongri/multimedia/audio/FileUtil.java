@@ -35,13 +35,13 @@ public class FileUtil {
      * 实例 record_20160101_13_15_12
      */
     public static String getFilePath() {
-        String fileDir = RecordManager.getCurrentConfig().getRecordDir();
+        String fileDir = AudioRecordManager.getCurrentConfig().getRecordDir();
         if (!FileUtil.createOrExistsDir(fileDir)) {
             Logger.w(TAG, "文件夹创建失败：%s", fileDir);
             return null;
         }
         String fileName = String.format(Locale.getDefault(), "record_%s", FileUtil.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
-        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, RecordManager.getCurrentConfig().getFormat().getExtension());
+        return String.format(Locale.getDefault(), "%s%s%s", fileDir, fileName, AudioRecordManager.getCurrentConfig().getFormat().getExtension());
     }
 
     /**

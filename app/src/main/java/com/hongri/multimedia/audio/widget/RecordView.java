@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hongri.multimedia.audio.listener.RecordStreamListener;
-import com.hongri.multimedia.audio.RecordManager;
+import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.util.DataUtil;
@@ -152,10 +152,10 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
                 lastRawX = event.getRawX();
                 lastRawY = event.getRawY();
 
-                if (isPointInRecordRect(lastTouchX, lastTouchY) && RecordManager.getStatus() != Status.STATUS_START) {
+                if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioRecordManager.getStatus() != Status.STATUS_START) {
                     recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
 //                    recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
-                    RecordManager.setStatus(Status.STATUS_START, this);
+                    AudioRecordManager.setStatus(Status.STATUS_START, this);
                 }
                 Log.d(TAG, "lastTouchX:" + lastTouchX + " lastTouchY:" + lastTouchY + " lastRawX:" + lastRawX + " lastRawY:" + lastRawY);
                 break;
@@ -182,10 +182,10 @@ public class RecordView extends FrameLayout implements RecordStreamListener {
                     public void run() {
                         if ((currentX > borderWidth && distanceX > (borderWidth / 4.0)) || (endTime - startTime < RECORD_BORDER_TIME)) {
                             Log.d(TAG, "trigger record cancel");
-                            RecordManager.setStatus(Status.STATUS_CANCEL);
+                            AudioRecordManager.setStatus(Status.STATUS_CANCEL);
                         } else {
                             Log.d(TAG, "trigger record finish");
-                            RecordManager.setStatus(Status.STATUS_STOP);
+                            AudioRecordManager.setStatus(Status.STATUS_STOP);
                         }
 
                         recordBtn.updateLayout(false, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
