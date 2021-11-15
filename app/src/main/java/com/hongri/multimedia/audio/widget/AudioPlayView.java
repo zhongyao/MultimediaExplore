@@ -30,7 +30,7 @@ import java.util.HashMap;
  */
 public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
 
-    private final String TAG = "RecordPlayView";
+    private final String TAG = "AudioPlayView";
     private ImageView playIv;
     private ProgressBar progressBar;
     private TextView playTime;
@@ -134,12 +134,6 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
                 playIv.setOnTouchListener(this);
             }
 
-            if (audioUrl.startsWith("http") || audioUrl.startsWith("https")) {
-                AudioPlayer.isLocalResource = false;
-            } else {
-                AudioPlayer.isLocalResource = true;
-            }
-
             if (progressBar != null && currentPlayTime != null) {
                 progressBar.setCurrentPlayTimeView(currentPlayTime);
             }
@@ -189,11 +183,19 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         Log.d(TAG, "onTouch");
         int id = v.getId();
-        if (id == R.id.playIv) {
-            audioPrepare(Uri.parse(audioUrl));
-            AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_START);
-            return true;
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (id == R.id.playIv) {
+                    audioPrepare(Uri.parse(audioUrl));
+                    AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_START);
+                    return true;
+                }
+                break;
+            default:
+                break;
         }
+
         return false;
     }
 

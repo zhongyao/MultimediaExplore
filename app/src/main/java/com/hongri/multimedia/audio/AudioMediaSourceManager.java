@@ -14,6 +14,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.util.Util;
+import com.hongri.multimedia.util.SchemeUtil;
 
 /**
  * Create by zhongyao on 2021/11/15
@@ -39,7 +40,8 @@ public class AudioMediaSourceManager {
             return null;
         }
         int type = Util.inferContentType(uri);
-        if (isLocalMedia) {
+        String url = uri.toString();
+        if (!SchemeUtil.isHttpProtocol(url)) {
             dataSourceFactory = new FileDataSource.Factory();
         } else {
             dataSourceFactory = new DefaultHttpDataSource.Factory();
