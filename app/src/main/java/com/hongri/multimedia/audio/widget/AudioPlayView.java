@@ -28,11 +28,11 @@ import java.util.HashMap;
  * Create by zhongyao on 2021/8/24
  * Description:播放录音
  */
-public class RecordPlayView extends FrameLayout implements View.OnTouchListener {
+public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
 
     private final String TAG = "RecordPlayView";
     private ImageView playIv;
-    private RecordProgressBar progressBar;
+    private ProgressBar progressBar;
     private TextView playTime;
     private static long duration;
     private TextView currentPlayTime;
@@ -79,11 +79,11 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
         }
     };
 
-    public RecordPlayView(@NonNull Context context) {
+    public AudioPlayView(@NonNull Context context) {
         super(context);
     }
 
-    public RecordPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public AudioPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -104,8 +104,8 @@ public class RecordPlayView extends FrameLayout implements View.OnTouchListener 
             }
 
             View childView2 = getChildAt(1);
-            if (childView2 instanceof RecordProgressBar) {
-                progressBar = (RecordProgressBar) childView2;
+            if (childView2 instanceof ProgressBar) {
+                progressBar = (ProgressBar) childView2;
 
                 progressBarLeftX = progressBar.getX();
                 progressBarWidth = progressBar.getWidth();

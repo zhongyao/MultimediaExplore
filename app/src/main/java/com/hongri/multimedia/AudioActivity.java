@@ -15,13 +15,12 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hongri.multimedia.audio.AudioModeManager;
 import com.hongri.multimedia.audio.AudioRecordManager;
-import com.hongri.multimedia.audio.SensorModeManager;
 import com.hongri.multimedia.util.AppUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.Status;
 import com.hongri.multimedia.audio.widget.RecordButton;
-import com.hongri.multimedia.audio.widget.RecordPlayView;
-import com.hongri.multimedia.audio.widget.RecordView;
+import com.hongri.multimedia.audio.widget.AudioPlayView;
+import com.hongri.multimedia.audio.widget.AudioRecordView;
 
 import java.util.List;
 import java.util.Locale;
@@ -34,9 +33,9 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
     private final String TAG = "AudioActivity";
     private Button start, pause, cancel, stop;
-    private RecordView recordView;
+    private AudioRecordView audioRecordView;
     private RecordButton recordBtn;
-    private RecordPlayView recordPlayView;
+    private AudioPlayView audioPlayView;
     private boolean permissionGranted = false;
     private int phoneWidth;
     private TextView audioModeBtn;
@@ -60,16 +59,16 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         pause = findViewById(R.id.pause);
         cancel = findViewById(R.id.cancel);
         stop = findViewById(R.id.stop);
-        recordView = findViewById(R.id.recordLayout);
+        audioRecordView = findViewById(R.id.recordLayout);
         recordBtn = findViewById(R.id.recordBtn);
-        recordPlayView = findViewById(R.id.recordPlayView);
+        audioPlayView = findViewById(R.id.recordPlayView);
         audioModeBtn = findViewById(R.id.audioMode);
 
         start.setOnClickListener(this);
         pause.setOnClickListener(this);
         cancel.setOnClickListener(this);
         stop.setOnClickListener(this);
-        recordView.setOnClickListener(this);
+        audioRecordView.setOnClickListener(this);
         recordBtn.setOnClickListener(this);
         audioModeBtn.setOnClickListener(this);
 
@@ -80,8 +79,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
         initConfig();
 
-        recordView.setPhoneWidth(this, phoneWidth);
-        recordView.setRecordConfig(recordConfig);
+        audioRecordView.setPhoneWidth(this, phoneWidth);
+        audioRecordView.setRecordConfig(recordConfig);
 
         XXPermissions.with(this).permission(PERMISSION_ALL).request(new OnPermissionCallback() {
             @Override
@@ -161,8 +160,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         AudioRecordManager.setStatus(Status.STATUS_RELEASE);
-        if (recordPlayView != null) {
-            recordPlayView.onRelease();
+        if (audioPlayView != null) {
+            audioPlayView.onRelease();
         }
     }
 }

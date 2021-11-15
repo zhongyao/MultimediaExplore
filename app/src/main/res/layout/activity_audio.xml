@@ -69,7 +69,7 @@
         android:layout_height="1dp"
         android:background="@color/teal_200" />
 
-    <com.hongri.multimedia.audio.widget.RecordView
+    <com.hongri.multimedia.audio.widget.AudioRecordView
         android:id="@+id/recordLayout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -100,14 +100,14 @@
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="按住说话" />
-    </com.hongri.multimedia.audio.widget.RecordView>
+    </com.hongri.multimedia.audio.widget.AudioRecordView>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/teal_200" />
 
-    <com.hongri.multimedia.audio.widget.RecordPlayView
+    <com.hongri.multimedia.audio.widget.AudioPlayView
         android:id="@+id/recordPlayView"
         android:layout_width="match_parent"
         android:layout_height="200dp">
@@ -120,7 +120,7 @@
             android:layout_marginStart="20dp"
             android:background="@drawable/audio_play_bg" />
 
-        <com.hongri.multimedia.audio.widget.RecordProgressBar
+        <com.hongri.multimedia.audio.widget.ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="220dp"
             android:layout_height="100dp"
@@ -142,7 +142,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center" />
 
-    </com.hongri.multimedia.audio.widget.RecordPlayView>
+    </com.hongri.multimedia.audio.widget.AudioPlayView>
 
     <TextView
         android:layout_width="match_parent"

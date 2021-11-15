@@ -18,7 +18,7 @@ import androidx.appcompat.widget.AppCompatButton;
  * Create by zhongyao on 2021/8/24
  * Description:
  */
-public class RecordProgressBar extends AppCompatButton {
+public class ProgressBar extends AppCompatButton {
 
     private static final String TAG = "RecordProgressBar";
     private Paint linePaintBottom;
@@ -33,13 +33,13 @@ public class RecordProgressBar extends AppCompatButton {
     private long duration;
     private float width, height;
 
-    public RecordProgressBar(@NonNull Context context) {
+    public ProgressBar(@NonNull Context context) {
         super(context);
 
         init(context);
     }
 
-    public RecordProgressBar(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public ProgressBar(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         init(context);
