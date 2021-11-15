@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -15,9 +16,11 @@ import android.widget.Toast;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hongri.multimedia.audio.AudioModeManager;
+import com.hongri.multimedia.audio.AudioPlayManager;
 import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
+import com.hongri.multimedia.audio.state.AudioPlayStatus;
 import com.hongri.multimedia.util.AppUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.AudioRecordStatus;
@@ -206,6 +209,18 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_STOP);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_STOP);
     }
 
     @Override

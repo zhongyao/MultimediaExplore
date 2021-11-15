@@ -150,10 +150,12 @@ public class AudioPlayer {
                     case Player.STATE_ENDED:
                         Log.d(TAG, "STATE_ENDED");
                         audioStatus = AudioPlayStatus.AUDIO_STOP;
+                        AudioModeManager.getInstance().abandonAudioFocus();
                         break;
                     case Player.STATE_IDLE:
                         Log.d(TAG, "STATE_IDLE");
                         audioStatus = AudioPlayStatus.AUDIO_IDLE;
+                        AudioModeManager.getInstance().abandonAudioFocus();
                         break;
                 }
             }
@@ -217,6 +219,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        AudioModeManager.getInstance().requestAudioFocus();
         if (playWhenReady) {
             if (!player.isPlaying()) {
                 player.setPlayWhenReady(true);
@@ -233,6 +236,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        AudioModeManager.getInstance().abandonAudioFocus();
         if (player.isPlaying()) {
             player.pause();
         }
@@ -244,6 +248,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        AudioModeManager.getInstance().abandonAudioFocus();
         player.stop();
         audioStatus = AudioPlayStatus.AUDIO_STOP;
     }
@@ -257,6 +262,7 @@ public class AudioPlayer {
         if (player == null) {
             return;
         }
+        AudioModeManager.getInstance().abandonAudioFocus();
         player.release();
         if (handlerInner != null) {
             handlerInner.removeCallbacksAndMessages(null);

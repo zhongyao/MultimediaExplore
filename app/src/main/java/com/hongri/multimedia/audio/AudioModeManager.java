@@ -22,6 +22,8 @@ public class AudioModeManager {
 
     private Context appContext;
 
+    private boolean isPauseMusic;
+
     enum PlayMode {
         Speaker,//外放
         Headset,//耳机
@@ -105,6 +107,20 @@ public class AudioModeManager {
                 playMode = Receiver;
             }
             changeMode(playMode);
+        }
+    }
+
+    public void requestAudioFocus() {
+        if (audioManager != null && audioManager.isMusicActive()) {
+            audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            isPauseMusic = true;
+        }
+    }
+
+    public void abandonAudioFocus() {
+        if (audioManager != null && isPauseMusic) {
+            audioManager.abandonAudioFocus(null);
+            isPauseMusic = false;
         }
     }
 

@@ -68,6 +68,13 @@ public class AudioPlayManager {
     }
 
     /**
+     * 获取音频焦点
+     */
+    public static void requestAudioFocus() {
+        AudioModeManager.getInstance().requestAudioFocus();
+    }
+
+    /**
      * 获取音频时长
      * @return
      */
