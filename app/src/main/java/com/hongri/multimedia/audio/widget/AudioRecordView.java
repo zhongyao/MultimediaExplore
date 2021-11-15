@@ -141,6 +141,7 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 isPressed = true;
+                timeTv.setText("00:00");
                 if (handler != null) {
                     handler.sendEmptyMessageDelayed(UPDATE_TIME, 1000);
                 }
