@@ -3,6 +3,7 @@ package com.hongri.multimedia;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -161,6 +162,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         AudioRecordManager.getInstance().setCurrentConfig(recordConfig);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         if (!permissionGranted) {
