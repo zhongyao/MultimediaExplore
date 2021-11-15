@@ -13,7 +13,7 @@ public enum AudioRecordStatus {
     /**
      * 初始化
      */
-    AUDIO_RECORD_READY,
+    AUDIO_RECORD_PREPARE,
 
     /**
      * 录音

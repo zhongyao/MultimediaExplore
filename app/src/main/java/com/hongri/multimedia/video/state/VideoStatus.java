@@ -13,7 +13,7 @@ public enum VideoStatus {
     /**
      * 初始化
      */
-    VIDEO_READY,
+    VIDEO_PREPARE,
 
     /**
      * 播放

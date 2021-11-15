@@ -13,7 +13,7 @@ public enum AudioPlayStatus {
     /**
      * 初始化
      */
-    AUDIO_READY,
+    AUDIO_PREPARE,
 
     /**
      * 播放

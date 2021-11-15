@@ -9,9 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
@@ -22,22 +20,14 @@ import com.google.android.exoplayer2.source.LoadEventInfo;
 import com.google.android.exoplayer2.source.MediaLoadData;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.upstream.FileDataSource;
-import com.google.android.exoplayer2.util.Util;
 import com.hongri.multimedia.audio.state.AudioPlayStatus;
 
 import java.util.HashMap;
 
 /**
  * Create by zhongyao on 2021/8/30
- * Description:
+ * Description:音频播放器
  */
 public class AudioPlayer {
 
@@ -47,6 +37,7 @@ public class AudioPlayer {
     private MediaSource mediaSource;
     //播放状态
     private AudioPlayStatus audioStatus = AudioPlayStatus.AUDIO_IDLE;
+    private boolean playWhenReady;
     private long duration;
     public static final int WHAT_DURATION = 0;
     public static final int WHAT_POSITION = 1;
@@ -74,38 +65,42 @@ public class AudioPlayer {
 
     @SuppressLint("HandlerLeak")
     public void createDefaultPlayer(Context context, Handler handler, Uri uri) {
-        player = new SimpleExoPlayer.Builder(context).build();
-        mediaSource = buildMediaSource(uri, isLocalResource);
-        if (mediaSource == null) {
+        if (player == null) {
+            player = new SimpleExoPlayer.Builder(context).build();
+        }
+        mediaSource = AudioMediaSourceManager.getInstance().buildMediaSource(uri, isLocalResource);
+        if (mediaSource == null || player == null) {
             return;
         }
 
-        handlerInner = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                Message msgOuter = new Message();
-                if (msg.what == WHAT_POSITION) {
-                    currentPosition = player.getCurrentPosition() / 1000;
-                    contentPosition = player.getContentPosition() / 1000;
-                    contentBufferedPosition = player.getContentBufferedPosition() / 1000;
-                    Log.d(TAG, "-----> currentPosition:" + currentPosition + " contentPosition:" + contentPosition + " contentBufferedPosition:" + contentBufferedPosition);
-                    HashMap<String, Long> hashMap = new HashMap<>();
-                    hashMap.put("currentPosition", currentPosition);
-                    hashMap.put("contentPosition", contentPosition);
-                    hashMap.put("contentBufferedPosition", contentBufferedPosition);
-                    msgOuter.what = WHAT_POSITION;
-                    msgOuter.obj = hashMap;
-                    handler.sendMessage(msgOuter);
-                    if (currentPosition < duration) {
-                        sendEmptyMessageDelayed(WHAT_POSITION, 300);
+        if (handlerInner == null) {
+            handlerInner = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    Message msgOuter = new Message();
+                    if (msg.what == WHAT_POSITION) {
+                        currentPosition = player.getCurrentPosition() / 1000;
+                        contentPosition = player.getContentPosition() / 1000;
+                        contentBufferedPosition = player.getContentBufferedPosition() / 1000;
+                        Log.d(TAG, "-----> currentPosition:" + currentPosition + " contentPosition:" + contentPosition + " contentBufferedPosition:" + contentBufferedPosition);
+                        HashMap<String, Long> hashMap = new HashMap<>();
+                        hashMap.put("currentPosition", currentPosition);
+                        hashMap.put("contentPosition", contentPosition);
+                        hashMap.put("contentBufferedPosition", contentBufferedPosition);
+                        msgOuter.what = WHAT_POSITION;
+                        msgOuter.obj = hashMap;
+                        handler.sendMessage(msgOuter);
+                        if (currentPosition < duration) {
+                            sendEmptyMessageDelayed(WHAT_POSITION, 300);
+                        }
+                    } else if (msg.what == WHAT_DURATION) {
+                        msgOuter.obj = msg.obj;
+                        handler.sendMessage(msgOuter);
                     }
-                } else if (msg.what == WHAT_DURATION) {
-                    msgOuter.obj = msg.obj;
-                    handler.sendMessage(msgOuter);
                 }
-            }
-        };
+            };
+        }
 
         mediaSource.addEventListener(handlerInner, new MediaSourceEventListener() {
 
@@ -134,12 +129,12 @@ public class AudioPlayer {
             }
         });
         player.setMediaSource(mediaSource);
-
         player.addListener(new Player.Listener() {
 
             @Override
             public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
                 Log.d(TAG, "onPlayWhenReadyChanged---> playWhenReady:" + playWhenReady);
+                AudioPlayer.this.playWhenReady = playWhenReady;
             }
 
             @Override
@@ -154,9 +149,11 @@ public class AudioPlayer {
                         break;
                     case Player.STATE_ENDED:
                         Log.d(TAG, "STATE_ENDED");
+                        audioStatus = AudioPlayStatus.AUDIO_STOP;
                         break;
                     case Player.STATE_IDLE:
                         Log.d(TAG, "STATE_IDLE");
+                        audioStatus = AudioPlayStatus.AUDIO_IDLE;
                         break;
                 }
             }
@@ -207,32 +204,6 @@ public class AudioPlayer {
         player.prepare();
     }
 
-    private MediaSource buildMediaSource(Uri uri, boolean isLocalMedia) {
-        DataSource.Factory dataSourceFactory;
-        if (uri == null) {
-            return null;
-        }
-        int type = Util.inferContentType(uri);
-        if (isLocalMedia) {
-            dataSourceFactory = new FileDataSource.Factory();
-        } else {
-            dataSourceFactory = new DefaultHttpDataSource.Factory();
-        }
-        Log.d(TAG, "buildMediaSource --- > uri:" + uri.toString() + " type:" + type);
-        switch (type) {
-            case C.TYPE_DASH:
-                return new DashMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_SS:
-                return new SsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_HLS:
-                return new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_OTHER:
-                return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-            default:
-                throw new IllegalStateException("Unsupported type: " + type);
-        }
-    }
-
     public long getDuration() {
         return duration;
     }
@@ -242,36 +213,47 @@ public class AudioPlayer {
     }
 
     public void play() {
+        Log.d(TAG, "play");
         if (player == null) {
             return;
         }
-        player.play();
+        if (playWhenReady) {
+            if (!player.isPlaying()) {
+                player.setPlayWhenReady(true);
+            }
+        } else {
+            player.prepare();
+            player.setPlayWhenReady(true);
+        }
+        audioStatus = AudioPlayStatus.AUDIO_START;
     }
 
     public void pause() {
+        Log.d(TAG, "pause");
         if (player == null) {
             return;
         }
         if (player.isPlaying()) {
             player.pause();
         }
+        audioStatus = AudioPlayStatus.AUDIO_PAUSE;
     }
 
     public void stop() {
+        Log.d(TAG, "stop");
         if (player == null) {
             return;
         }
         player.stop();
+        audioStatus = AudioPlayStatus.AUDIO_STOP;
     }
 
     public void cancel() {
-        if (player == null) {
-            return;
-        }
-        //TODO cancel
+        Log.d(TAG, "cancel");
     }
 
     public void release() {
+        Log.d(TAG, "release");
         if (player == null) {
             return;
         }
@@ -279,5 +261,6 @@ public class AudioPlayer {
         if (handlerInner != null) {
             handlerInner.removeCallbacksAndMessages(null);
         }
+        audioStatus = AudioPlayStatus.AUDIO_RELEASE;
     }
 }

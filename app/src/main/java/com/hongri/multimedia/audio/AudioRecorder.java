@@ -152,7 +152,7 @@ public class AudioRecorder {
                 AUDIO_CHANNEL, AUDIO_ENCODING);
         audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
         this.fileName = fileName;
-        audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_READY;
+        audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_PREPARE;
     }
 
 
@@ -449,7 +449,7 @@ public class AudioRecorder {
      */
     public void stopRecord() {
         Log.d("AudioRecorder", "===stopRecord===");
-        if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_IDLE || audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_READY) {
+        if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_IDLE || audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_PREPARE) {
             throw new IllegalStateException("录音尚未开始");
         } else {
             audioRecord.stop();

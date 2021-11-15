@@ -26,7 +26,7 @@ public class AudioPlayManager {
 
                 break;
 
-            case AUDIO_READY:
+            case AUDIO_PREPARE:
                 //音频初始化
                 if (context != null && handler != null && object instanceof Uri) {
                     uri = (Uri) object;

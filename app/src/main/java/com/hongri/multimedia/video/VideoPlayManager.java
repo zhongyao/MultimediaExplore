@@ -26,7 +26,7 @@ public class VideoPlayManager {
 
                 break;
 
-            case VIDEO_READY:
+            case VIDEO_PREPARE:
                 //视频初始化
                 if (context != null && handler != null && object instanceof Uri) {
                     uri = (Uri) object;

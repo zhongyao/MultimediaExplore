@@ -88,7 +88,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     permissionGranted = true;
-                    AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_READY);
+                    AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_PREPARE);
                 }
 
             }
@@ -106,7 +106,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                         Log.d(TAG, "status ---> STATUS_IDLE");
                         break;
 
-                    case AUDIO_RECORD_READY:
+                    case AUDIO_RECORD_PREPARE:
                         Log.d(TAG, "status ---> STATUS_READY");
                         break;
 
