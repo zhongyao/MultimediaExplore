@@ -146,7 +146,7 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
         }
     }
 
-    private void init(Uri uri) {
+    private void audioPrepare(Uri uri) {
         AudioPlayManager.setStatus(getContext(), handler, AudioPlayStatus.AUDIO_PREPARE, uri);
     }
 
@@ -190,7 +190,7 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
         Log.d(TAG, "onTouch");
         int id = v.getId();
         if (id == R.id.playIv) {
-            init(Uri.parse(audioUrl));
+            audioPrepare(Uri.parse(audioUrl));
             AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_START);
             return true;
         }

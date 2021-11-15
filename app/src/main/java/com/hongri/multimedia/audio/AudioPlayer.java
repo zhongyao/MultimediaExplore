@@ -64,7 +64,7 @@ public class AudioPlayer {
 
 
     @SuppressLint("HandlerLeak")
-    public void createDefaultPlayer(Context context, Handler handler, Uri uri) {
+    public void prepareAudioPlayer(Context context, Handler handler, Uri uri) {
         if (player == null) {
             player = new SimpleExoPlayer.Builder(context).build();
         }

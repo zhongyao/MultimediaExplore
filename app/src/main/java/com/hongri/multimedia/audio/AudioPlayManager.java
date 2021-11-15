@@ -30,7 +30,7 @@ public class AudioPlayManager {
                 //音频初始化
                 if (context != null && handler != null && object instanceof Uri) {
                     uri = (Uri) object;
-                    AudioPlayer.getInstance().createDefaultPlayer(context, handler, uri);
+                    AudioPlayer.getInstance().prepareAudioPlayer(context, handler, uri);
                 }
                 break;
 
