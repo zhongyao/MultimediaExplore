@@ -94,7 +94,7 @@ public class AudioRecordManager {
                 break;
 
             case AUDIO_RECORD_CANCEL:
-                AudioRecorder.getInstance().cancel();
+                AudioRecorder.getInstance().cancelRecord();
                 break;
 
             case AUDIO_RECORD_RELEASE:

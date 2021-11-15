@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -105,6 +106,7 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
     private long startTime, endTime;
     private static final int UPDATE_TIME = 0;
     private long recordTime;
+    private boolean isCancelRegion;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -114,8 +116,8 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
             switch (msg.what) {
                 case UPDATE_TIME:
                     Log.d(TAG, "UPDATE_TIME:");
-                    if (timeTv != null) {
-                        recordTime = 1000 + recordTime;
+                    recordTime = 1000 + recordTime;
+                    if (timeTv != null && !isCancelRegion) {
                         timeTv.setText(DateUtil.generateTime(recordTime));
                     }
                     sendEmptyMessageDelayed(UPDATE_TIME, 1000);
@@ -130,8 +132,6 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-//        Log.d(TAG, "onInterceptTouchEvent ---> event:" + event.getAction());
-
         if (activity == null || recordBtn == null || deleteBtn == null) {
             return false;
         }
@@ -154,7 +154,6 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
 
                 if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioRecordManager.getInstance().getStatus() != AudioRecordStatus.AUDIO_RECORD_START) {
                     recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
-//                    recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
                     AudioRecordManager.getInstance().setRecordSoundSizeListener(this);
                     AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_START);
                 }
@@ -168,6 +167,11 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
 
                 if (currentX > borderWidth && distanceX > (borderWidth / 4.0)) {
                     deleteBtn.setBackgroundColor(Color.parseColor("#FF0000"));
+                    timeTv.setText("松手取消发送");
+                    isCancelRegion = true;
+                } else {
+                    deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    isCancelRegion = false;
                 }
 
                 break;
@@ -183,6 +187,7 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
                     public void run() {
                         if ((currentX > borderWidth && distanceX > (borderWidth / 4.0)) || (endTime - startTime < RECORD_BORDER_TIME)) {
                             Log.d(TAG, "trigger record cancel");
+                            Toast.makeText(getContext(), "时间太短", Toast.LENGTH_LONG).show();
                             AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_CANCEL);
                         } else {
                             Log.d(TAG, "trigger record finish");
@@ -190,7 +195,6 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
                         }
 
                         recordBtn.updateLayout(false, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
-//                        recordBtn.setBackgroundResource(R.drawable.audio_record_normal_bg);
                         deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }, 100);
