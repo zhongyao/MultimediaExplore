@@ -3,7 +3,7 @@ package com.hongri.multimedia.audio.mp3;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 
-import com.hongri.multimedia.audio.FileUtil;
+import com.hongri.multimedia.util.FileUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.util.Logger;
 

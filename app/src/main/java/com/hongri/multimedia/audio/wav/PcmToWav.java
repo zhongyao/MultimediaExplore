@@ -1,8 +1,6 @@
-package com.hongri.multimedia.audio;
+package com.hongri.multimedia.audio.wav;
 
 import android.util.Log;
-
-import com.hongri.multimedia.util.WaveHeader;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

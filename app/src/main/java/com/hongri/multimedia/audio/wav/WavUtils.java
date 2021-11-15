@@ -1,6 +1,6 @@
 package com.hongri.multimedia.audio.wav;
 
-import com.hongri.multimedia.audio.FileUtil;
+import com.hongri.multimedia.util.FileUtil;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.util.ByteUtils;
 import com.hongri.multimedia.util.Logger;

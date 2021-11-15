@@ -7,6 +7,7 @@ import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.AudioRecordStatus;
+import com.hongri.multimedia.util.FileUtil;
 
 /**
  * Create by zhongyao on 2021/8/18

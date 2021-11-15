@@ -1,4 +1,4 @@
-package com.hongri.multimedia.util;
+package com.hongri.multimedia.audio.wav;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

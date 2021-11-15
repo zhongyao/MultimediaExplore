@@ -17,8 +17,10 @@ import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.AudioRecordStatus;
+import com.hongri.multimedia.audio.wav.PcmToWav;
 import com.hongri.multimedia.audio.wav.WavUtils;
 import com.hongri.multimedia.util.ByteUtils;
+import com.hongri.multimedia.util.FileUtil;
 import com.hongri.multimedia.util.Logger;
 
 import java.io.BufferedInputStream;
