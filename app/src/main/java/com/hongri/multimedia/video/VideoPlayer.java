@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
-import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.video.state.VideoStatus;
 
 /**
  * Create by zhongyao on 2021/9/8
@@ -41,7 +41,7 @@ public class VideoPlayer {
     private DefaultDataSourceFactory dataSourceFactory;
     private MediaSource mediaSource;
     //播放状态
-    private Status status = Status.STATUS_NO_READY;
+    private VideoStatus status = VideoStatus.VIDEO_IDLE;
     private long duration;
     public static final int WHAT_DURATION = 0;
     public static final int WHAT_POSITION = 1;
@@ -111,7 +111,7 @@ public class VideoPlayer {
             public void onIsPlayingChanged(boolean isPlaying) {
                 Log.d(TAG, "onIsPlayingChanged---> isPlaying:" + isPlaying);
                 if (isPlaying) {
-                    status = Status.STATUS_START;
+                    status = VideoStatus.VIDEO_START;
                 } else {
 
                 }
@@ -217,7 +217,7 @@ public class VideoPlayer {
         player = null;
     }
 
-    public Status getStatus() {
+    public VideoStatus getStatus() {
         return status;
     }
 

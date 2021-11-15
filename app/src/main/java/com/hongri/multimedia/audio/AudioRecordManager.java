@@ -1,17 +1,12 @@
 package com.hongri.multimedia.audio;
 
-
-import android.content.Context;
-import android.util.Log;
-
-import com.hongri.multimedia.audio.listener.RecordStreamListener;
 import com.hongri.multimedia.audio.listener.RecordDataListener;
 import com.hongri.multimedia.audio.listener.RecordFftDataListener;
 import com.hongri.multimedia.audio.listener.RecordResultListener;
 import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.state.RecordConfig;
-import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.audio.state.AudioRecordStatus;
 
 /**
  * Create by zhongyao on 2021/8/18
@@ -19,20 +14,24 @@ import com.hongri.multimedia.audio.state.Status;
  */
 public class AudioRecordManager {
 
-    private static final String TAG = "AudioStatusManager";
-    private static String fileName;
-    private static RecordStreamListener listener = null;
-    private static Context mContext;
+    private static final String TAG = "AudioRecordManager";
 
-    public static void init(Context context) {
-        mContext = context;
+    private AudioRecordManager() {
     }
 
-    public static void setCurrentConfig(RecordConfig recordConfig) {
+    public static AudioRecordManager getInstance() {
+        return AudioRecordManagerHolder.instance;
+    }
+
+    public static class AudioRecordManagerHolder {
+        public static AudioRecordManager instance = new AudioRecordManager();
+    }
+
+    public void setCurrentConfig(RecordConfig recordConfig) {
         AudioRecorder.getInstance().setCurrentConfig(recordConfig);
     }
 
-    public static RecordConfig getCurrentConfig() {
+    public RecordConfig getCurrentConfig() {
         return AudioRecorder.getInstance().getCurrentConfig();
     }
 
@@ -71,53 +70,33 @@ public class AudioRecordManager {
         AudioRecorder.getInstance().setRecordSoundSizeListener(listener);
     }
 
-    public static void setStatus(Status curStatus) {
-        Log.d(TAG, "curStatus:" + curStatus);
-        setStatus(curStatus, null);
-    }
-
-    public static void setStatus(Status curStatus, Object object) {
-        if (mContext == null) {
-            Log.e(TAG, "AudioStatusManager not init");
-            return;
-        }
-        switch (curStatus) {
-            case STATUS_NO_READY:
+    public void setStatus(AudioRecordStatus curAudioRecordStatus) {
+        switch (curAudioRecordStatus) {
+            case AUDIO_RECORD_IDLE:
 
                 break;
 
-            case STATUS_READY:
-                //音频初始化
-                if (object instanceof String) {
-                    fileName = (String) object;
-                } else {
-                    fileName = "";
-                }
+            case AUDIO_RECORD_READY:
                 AudioRecorder.getInstance().createDefaultAudio(FileUtil.getFilePath());
                 break;
 
-            case STATUS_START:
-                if (object instanceof RecordStreamListener) {
-                    listener = (RecordStreamListener) object;
-                } else {
-                    listener = null;
-                }
-                AudioRecorder.getInstance().startRecord(listener);
+            case AUDIO_RECORD_START:
+                AudioRecorder.getInstance().startRecord();
                 break;
 
-            case STATUS_PAUSE:
+            case AUDIO_RECORD_PAUSE:
                 AudioRecorder.getInstance().pauseRecord();
                 break;
 
-            case STATUS_STOP:
+            case AUDIO_RECORD_STOP:
                 AudioRecorder.getInstance().stopRecord();
                 break;
 
-            case STATUS_CANCEL:
+            case AUDIO_RECORD_CANCEL:
                 AudioRecorder.getInstance().cancel();
                 break;
 
-            case STATUS_RELEASE:
+            case AUDIO_RECORD_RELEASE:
                 AudioRecorder.getInstance().releaseRecord();
                 break;
 
@@ -126,7 +105,7 @@ public class AudioRecordManager {
         }
     }
 
-    public static Status getStatus() {
-        return AudioRecorder.getInstance().getStatus();
+    public AudioRecordStatus getStatus() {
+        return AudioRecorder.getInstance().getAudioRecordStatus();
     }
 }

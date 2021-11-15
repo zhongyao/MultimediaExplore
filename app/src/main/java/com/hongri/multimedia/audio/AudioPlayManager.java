@@ -5,8 +5,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.hongri.multimedia.audio.state.Status;
-
+import com.hongri.multimedia.audio.state.AudioPlayStatus;
 /**
  * Create by zhongyao on 2021/8/30
  * Description:
@@ -16,18 +15,18 @@ public class AudioPlayManager {
     private static final String TAG = "PlayStatusManager";
     private static Uri uri;
 
-    public static void setStatus(Status curStatus) {
-        Log.d(TAG, "curStatus:" + curStatus);
-        setStatus(null, null, curStatus, null);
+    public static void setStatus(AudioPlayStatus curAudioStatus) {
+        Log.d(TAG, "curStatus:" + curAudioStatus);
+        setStatus(null, null, curAudioStatus, null);
     }
 
-    public static void setStatus(Context context, Handler handler, Status curStatus, Object object) {
-        switch (curStatus) {
-            case STATUS_NO_READY:
+    public static void setStatus(Context context, Handler handler, AudioPlayStatus curAudioStatus, Object object) {
+        switch (curAudioStatus) {
+            case AUDIO_IDLE:
 
                 break;
 
-            case STATUS_READY:
+            case AUDIO_READY:
                 //音频初始化
                 if (context != null && handler != null && object instanceof Uri) {
                     uri = (Uri) object;
@@ -35,23 +34,23 @@ public class AudioPlayManager {
                 }
                 break;
 
-            case STATUS_START:
+            case AUDIO_START:
                 AudioPlayer.getInstance().play();
                 break;
 
-            case STATUS_PAUSE:
+            case AUDIO_PAUSE:
                 AudioPlayer.getInstance().pause();
                 break;
 
-            case STATUS_STOP:
+            case AUDIO_STOP:
                 AudioPlayer.getInstance().stop();
                 break;
 
-            case STATUS_CANCEL:
+            case AUDIO_CANCEL:
                 AudioPlayer.getInstance().cancel();
                 break;
 
-            case STATUS_RELEASE:
+            case AUDIO_RELEASE:
                 AudioPlayer.getInstance().release();
                 break;
 
@@ -64,8 +63,8 @@ public class AudioPlayManager {
      * 获取音频播状态
      * @return
      */
-    public static Status getStatus() {
-        return AudioPlayer.getInstance().getStatus();
+    public static AudioPlayStatus getStatus() {
+        return AudioPlayer.getInstance().getAudioStatus();
     }
 
     /**
@@ -81,7 +80,7 @@ public class AudioPlayManager {
      * @return
      */
     public static boolean isPlaying() {
-        return getStatus() == Status.STATUS_START;
+        return getStatus() == AudioPlayStatus.AUDIO_START;
     }
 
 }

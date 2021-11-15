@@ -30,9 +30,8 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.FileDataSource;
-import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.audio.state.AudioPlayStatus;
 
 import java.util.HashMap;
 
@@ -47,7 +46,7 @@ public class AudioPlayer {
     private DefaultDataSourceFactory dataSourceFactory;
     private MediaSource mediaSource;
     //播放状态
-    private Status status = Status.STATUS_NO_READY;
+    private AudioPlayStatus audioStatus = AudioPlayStatus.AUDIO_IDLE;
     private long duration;
     public static final int WHAT_DURATION = 0;
     public static final int WHAT_POSITION = 1;
@@ -60,8 +59,8 @@ public class AudioPlayer {
 //        createDefaultPlayer();
     }
 
-    public Status getStatus() {
-        return status;
+    public AudioPlayStatus getAudioStatus() {
+        return audioStatus;
     }
 
     public static class AudioPlayerHolder {
@@ -166,7 +165,7 @@ public class AudioPlayer {
             public void onIsPlayingChanged(boolean isPlaying) {
                 Log.d(TAG, "onIsPlayingChanged---> isPlaying:" + isPlaying);
                 if (isPlaying) {
-                    status = Status.STATUS_START;
+                    audioStatus = AudioPlayStatus.AUDIO_START;
                 } else {
 
                 }

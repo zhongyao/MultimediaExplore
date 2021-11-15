@@ -1,5 +1,5 @@
 package com.hongri.multimedia.audio.listener;
-
+import com.hongri.multimedia.audio.state.AudioRecordStatus;
 
 /**
  * @author zhaolewei on 2018/7/11.
@@ -11,7 +11,7 @@ public interface RecordStateListener {
      *
      * @param state 当前状态
      */
-//    void onStateChange(RecordState state);
+    void onStateChange(AudioRecordStatus state);
 
     /**
      * 录音错误

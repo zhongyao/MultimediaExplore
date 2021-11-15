@@ -17,18 +17,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hongri.multimedia.audio.listener.RecordStreamListener;
+import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
-import com.hongri.multimedia.audio.state.Status;
-import com.hongri.multimedia.util.DataUtil;
+import com.hongri.multimedia.audio.state.AudioRecordStatus;
 import com.hongri.multimedia.util.DateUtil;
 
 /**
  * Create by zhongyao on 2021/8/17
  * Description:录音布局类
  */
-public class AudioRecordView extends FrameLayout implements RecordStreamListener {
+public class AudioRecordView extends FrameLayout implements RecordSoundSizeListener {
 
     private Activity activity;
     private int phoneWidth;
@@ -152,10 +151,11 @@ public class AudioRecordView extends FrameLayout implements RecordStreamListener
                 lastRawX = event.getRawX();
                 lastRawY = event.getRawY();
 
-                if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioRecordManager.getStatus() != Status.STATUS_START) {
+                if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioRecordManager.getInstance().getStatus() != AudioRecordStatus.AUDIO_RECORD_START) {
                     recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
 //                    recordBtn.setBackgroundResource(R.drawable.audio_record_pressed_bg);
-                    AudioRecordManager.setStatus(Status.STATUS_START, this);
+                    AudioRecordManager.getInstance().setRecordSoundSizeListener(this);
+                    AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_START);
                 }
                 Log.d(TAG, "lastTouchX:" + lastTouchX + " lastTouchY:" + lastTouchY + " lastRawX:" + lastRawX + " lastRawY:" + lastRawY);
                 break;
@@ -182,10 +182,10 @@ public class AudioRecordView extends FrameLayout implements RecordStreamListener
                     public void run() {
                         if ((currentX > borderWidth && distanceX > (borderWidth / 4.0)) || (endTime - startTime < RECORD_BORDER_TIME)) {
                             Log.d(TAG, "trigger record cancel");
-                            AudioRecordManager.setStatus(Status.STATUS_CANCEL);
+                            AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_CANCEL);
                         } else {
                             Log.d(TAG, "trigger record finish");
-                            AudioRecordManager.setStatus(Status.STATUS_STOP);
+                            AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_STOP);
                         }
 
                         recordBtn.updateLayout(false, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
@@ -219,22 +219,6 @@ public class AudioRecordView extends FrameLayout implements RecordStreamListener
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void recordOfByte(byte[] data, int begin, int end) {
-        if (!isPressed) {
-            return;
-        }
-        double volume = DataUtil.calculateVolumeByBytes(data);
-        Log.d(TAG, "volume: " + volume);
-
-        post(new Runnable() {
-            @Override
-            public void run() {
-                recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, (recordBtnWidth / 3) + (float) volume * 3);
-            }
-        });
     }
 
     @Override

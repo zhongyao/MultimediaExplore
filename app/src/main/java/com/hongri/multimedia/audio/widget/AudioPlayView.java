@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.AudioPlayer;
 import com.hongri.multimedia.audio.AudioPlayManager;
-import com.hongri.multimedia.audio.state.Status;
+import com.hongri.multimedia.audio.state.AudioPlayStatus;
 
 import java.util.HashMap;
 
@@ -148,7 +148,7 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
     }
 
     private void init(Uri uri) {
-        AudioPlayManager.setStatus(getContext(), handler, Status.STATUS_READY, uri);
+        AudioPlayManager.setStatus(getContext(), handler, AudioPlayStatus.AUDIO_READY, uri);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
         Log.d(TAG, "onTouch");
         int id = v.getId();
         if (id == R.id.playIv) {
-            AudioPlayManager.setStatus(Status.STATUS_START);
+            AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_START);
             return true;
         }
         return false;
