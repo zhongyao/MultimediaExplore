@@ -48,14 +48,17 @@ public class ProgressBar extends AppCompatButton {
     private void init(Context context) {
         Log.d(TAG, "init");
         linePaintBottom = new Paint();
-        linePaintTop = new Paint();
-        circlePaint = new Paint();
+        linePaintBottom.setAntiAlias(true);
         linePaintBottom.setColor(Color.parseColor(LINE_BOTTOM_COLOR));
         linePaintBottom.setStrokeWidth((float) 5.0);
 
+        linePaintTop = new Paint();
+        linePaintTop.setAntiAlias(true);
         linePaintTop.setColor(Color.parseColor(LINE_TOP_COLOR));
         linePaintTop.setStrokeWidth((float) 5.0);
 
+        circlePaint = new Paint();
+        circlePaint.setAntiAlias(true);
         circlePaint.setColor(Color.parseColor(CIRCLE_COLOR));
     }
 

@@ -41,8 +41,11 @@ public class RecordButton extends AppCompatButton {
 
     private void init(Context context) {
         paintInner = new Paint();
-        paintOuter = new Paint();
+        paintInner.setAntiAlias(true);
         paintInner.setColor(Color.parseColor(COLOR_NORMAL));
+
+        paintOuter = new Paint();
+        paintOuter.setAntiAlias(true);
         paintOuter.setColor(Color.parseColor(COLOR_SELECTED));
     }
 
