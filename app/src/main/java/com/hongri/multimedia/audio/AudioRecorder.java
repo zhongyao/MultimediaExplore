@@ -60,9 +60,6 @@ public class AudioRecorder {
     //文件名
     private String fileName;
 
-    //录音文件
-    private List<String> filesName = new ArrayList<>();
-
     private AudioRecordThread recordThread;
 
     private Mp3EncodeThread mp3EncodeThread;
@@ -259,7 +256,7 @@ public class AudioRecorder {
             if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_STOP) {
                 makeFile();
             } else {
-                Logger.i(TAG, "暂停！");
+                Logger.i(TAG, "取消录制...");
             }
         } catch (Exception e) {
             Logger.e(e, TAG, e.getMessage());
@@ -441,6 +438,7 @@ public class AudioRecorder {
         } else {
             audioRecord.stop();
             audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_PAUSE;
+            notifyState();
         }
     }
 
@@ -454,26 +452,7 @@ public class AudioRecorder {
         } else {
             audioRecord.stop();
             audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_STOP;
-            saveRecordFile();
-        }
-    }
-
-    public void saveRecordFile() {
-        //假如有暂停录音
-        try {
-            if (filesName.size() > 0) {
-                List<String> filePaths = new ArrayList<>();
-                for (String fileName : filesName) {
-                    filePaths.add(FileUtil.getPcmFileAbsolutePath(fileName));
-                }
-                //清除
-                filesName.clear();
-                //将多个pcm文件转化为wav文件
-                mergePCMFilesToWAVFile(filePaths);
-
-            }
-        } catch (IllegalStateException e) {
-            throw new IllegalStateException(e.getMessage());
+            notifyState();
         }
     }
 
@@ -486,41 +465,20 @@ public class AudioRecorder {
             audioRecord = null;
         }
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_IDLE;
+        notifyState();
     }
 
     /**
      * 取消录音
      */
-    public void cancel() {
-//        filesName.clear();
-//        fileName = null;
-//        if (audioRecord != null) {
-//            audioRecord.release();
-//            audioRecord = null;
-//        }
+    public void cancelRecord() {
+        if (audioRecord != null) {
+            audioRecord.release();
+            audioRecord = null;
+        }
 
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_CANCEL;
-    }
-
-    /**
-     * 将pcm合并成wav
-     *
-     * @param filePaths
-     */
-    private void mergePCMFilesToWAVFile(final List<String> filePaths) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (PcmToWav.mergePCMFilesToWAVFile(filePaths, FileUtil.getWavFileAbsolutePath(fileName))) {
-                    //操作成功
-                } else {
-                    //操作失败
-                    Log.e("AudioRecorder", "mergePCMFilesToWAVFile fail");
-                    throw new IllegalStateException("mergePCMFilesToWAVFile fail");
-                }
-                fileName = "";
-            }
-        }).start();
+        notifyState();
     }
 
     private void notifyState() {
