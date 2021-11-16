@@ -7,7 +7,6 @@ import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.AudioRecordStatus;
-import com.hongri.multimedia.util.FileUtil;
 
 /**
  * Create by zhongyao on 2021/8/18
@@ -78,7 +77,7 @@ public class AudioRecordManager {
                 break;
 
             case AUDIO_RECORD_PREPARE:
-                AudioRecorder.getInstance().createDefaultAudio();
+                AudioRecorder.getInstance().prepareRecord();
                 break;
 
             case AUDIO_RECORD_START:
@@ -94,7 +93,7 @@ public class AudioRecordManager {
                 break;
 
             case AUDIO_RECORD_CANCEL:
-//                AudioRecorder.getInstance().cancelRecord();
+                AudioRecorder.getInstance().cancelRecord();
                 break;
 
             case AUDIO_RECORD_RELEASE:

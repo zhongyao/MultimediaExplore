@@ -31,6 +31,11 @@ public enum AudioRecordStatus {
     AUDIO_RECORD_STOP,
 
     /**
+     * 录音流程结束（转换结束）
+     */
+    AUDIO_RECORD_FINISH,
+
+    /**
      * 取消
      */
     AUDIO_RECORD_CANCEL,

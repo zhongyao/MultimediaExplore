@@ -1,7 +1,5 @@
 package com.hongri.multimedia.util;
 
-import android.util.Log;
-
 /**
  * Create by zhongyao on 2021/8/19
  * Description:
@@ -9,6 +7,18 @@ import android.util.Log;
 public class DataUtil {
 
     private static final String TAG = "DataUtil";
+
+    public static int getDb(byte[] data) {
+        double sum = 0;
+        double ave;
+        int length = Math.min(data.length, 128);
+        int offsetStart = 0;
+        for (int i = offsetStart; i < length; i++) {
+            sum += data[i] * data[i];
+        }
+        ave = sum / (length - offsetStart);
+        return (int) (Math.log10(ave) * 20);
+    }
 
     /**
      * 通过short数组获取到音量(分贝)值

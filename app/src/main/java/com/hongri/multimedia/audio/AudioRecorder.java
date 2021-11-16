@@ -5,7 +5,6 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.hongri.multimedia.audio.fftlib.FftFactory;
@@ -17,9 +16,9 @@ import com.hongri.multimedia.audio.listener.RecordStateListener;
 import com.hongri.multimedia.audio.mp3.Mp3EncodeThread;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.audio.state.AudioRecordStatus;
-import com.hongri.multimedia.audio.wav.PcmToWav;
 import com.hongri.multimedia.audio.wav.WavUtils;
 import com.hongri.multimedia.util.ByteUtils;
+import com.hongri.multimedia.util.DataUtil;
 import com.hongri.multimedia.util.FileUtil;
 import com.hongri.multimedia.util.Logger;
 
@@ -100,7 +99,7 @@ public class AudioRecorder {
 
     private AudioRecorder() {
         Log.d(TAG, "AudioRecorder");
-        createDefaultAudio();
+        prepareRecord();
     }
 
     public void setRecordStateListener(RecordStateListener recordStateListener) {
@@ -141,11 +140,17 @@ public class AudioRecorder {
     /**
      * 创建默认的录音对象
      */
-    public void createDefaultAudio() {
+    public void prepareRecord() {
         // 获得缓冲区字节大小
-        bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
-                AUDIO_CHANNEL, AUDIO_ENCODING);
-        audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
+        if (bufferSizeInBytes == 0) {
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(currentConfig.getSampleRate(),
+                    currentConfig.getChannelConfig(), currentConfig.getEncodingConfig());
+        }
+        if (audioRecord == null) {
+            audioRecord = new AudioRecord(AUDIO_INPUT, currentConfig.getSampleRate(),
+                    currentConfig.getChannelConfig(), currentConfig.getEncodingConfig(), bufferSizeInBytes);
+        }
+
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_PREPARE;
     }
 
@@ -178,6 +183,7 @@ public class AudioRecorder {
                 if (mp3EncodeThread == null) {
                     initMp3EncoderThread(bufferSizeInBytes);
                 } else {
+                    mp3EncodeThread.setFile(new File(fileName));
                     Logger.e(TAG, "mp3EncodeThread != null, 请检查代码");
                 }
             }
@@ -219,9 +225,11 @@ public class AudioRecorder {
             notifyError("录音失败");
         }
         if (audioRecordStatus != AudioRecordStatus.AUDIO_RECORD_PAUSE) {
-            audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_IDLE;
-            notifyState();
-            stopMp3Encoded();
+            if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_CANCEL) {
+                deleteMp3Encoded();
+            } else {
+                stopMp3Encoded();
+            }
         } else {
             Logger.d(TAG, "暂停");
         }
@@ -248,7 +256,7 @@ public class AudioRecorder {
             if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_STOP) {
                 makeFile();
             } else {
-                Logger.i(TAG, "取消录制...");
+                Logger.d(TAG, "取消录制...");
             }
         } catch (Exception e) {
             Logger.e(e, TAG, e.getMessage());
@@ -283,7 +291,7 @@ public class AudioRecorder {
             default:
                 break;
         }
-//        notifyFinish();
+        notifyFinish();
         Logger.i(TAG, "录音完成！ path: %s ； 大小：%s", resultFile.getAbsoluteFile(), resultFile.length());
     }
 
@@ -357,12 +365,28 @@ public class AudioRecorder {
         return true;
     }
 
+
+    private void deleteMp3Encoded() {
+        if (mp3EncodeThread != null) {
+            mp3EncodeThread.deleteSafe(new Mp3EncodeThread.EncodeDeleteListener() {
+
+                @Override
+                public void onDelete() {
+
+                    mp3EncodeThread = null;
+                }
+            });
+        } else {
+            Logger.e(TAG, "mp3EncodeThread is null, 代码业务流程有误，请检查！！ ");
+        }
+    }
+
     private void stopMp3Encoded() {
         if (mp3EncodeThread != null) {
             mp3EncodeThread.stopSafe(new Mp3EncodeThread.EncordFinishListener() {
                 @Override
                 public void onFinish() {
-//                    notifyFinish();
+                    notifyFinish();
                     mp3EncodeThread = null;
                 }
             });
@@ -395,7 +419,7 @@ public class AudioRecorder {
                     byte[] fftData = fftFactory.makeFftData(data);
                     if (fftData != null) {
                         if (recordSoundSizeListener != null) {
-                            recordSoundSizeListener.onSoundSize(getDb(fftData));
+                            recordSoundSizeListener.onSoundSize(DataUtil.getDb(fftData));
                         }
 
                         if (recordFftDataListener != null) {
@@ -407,18 +431,21 @@ public class AudioRecorder {
         });
     }
 
-    private int getDb(byte[] data) {
-        double sum = 0;
-        double ave;
-        int length = Math.min(data.length, 128);
-        int offsetStart = 0;
-        for (int i = offsetStart; i < length; i++) {
-            sum += data[i] * data[i];
-        }
-        ave = sum / (length - offsetStart);
-        return (int) (Math.log10(ave) * 20);
-    }
+    private void notifyFinish() {
+        Logger.d(TAG, "录音结束 file: %s", resultFile.getAbsolutePath());
 
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (recordStateListener != null) {
+                    recordStateListener.onStateChange(AudioRecordStatus.AUDIO_RECORD_FINISH);
+                }
+                if (recordResultListener != null) {
+                    recordResultListener.onResult(resultFile);
+                }
+            }
+        });
+    }
 
     /**
      * 暂停录音
@@ -449,6 +476,15 @@ public class AudioRecorder {
     }
 
     /**
+     * 取消录音
+     */
+    public void cancelRecord() {
+        Log.d(TAG, "===cancelRecord===");
+        audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_CANCEL;
+        notifyState();
+    }
+
+    /**
      * 销毁(释放)录音实例
      */
     public void releaseRecord() {
@@ -458,19 +494,6 @@ public class AudioRecorder {
             audioRecord = null;
         }
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_IDLE;
-        notifyState();
-    }
-
-    /**
-     * 取消录音
-     */
-    public void cancelRecord() {
-        Log.d(TAG, "===cancelRecord===");
-        if (audioRecord != null) {
-            audioRecord.release();
-            audioRecord = null;
-        }
-        audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_CANCEL;
         notifyState();
     }
 

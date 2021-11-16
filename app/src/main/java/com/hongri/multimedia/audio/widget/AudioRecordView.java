@@ -154,6 +154,7 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
 
                 if (isPointInRecordRect(lastTouchX, lastTouchY) && AudioRecordManager.getInstance().getStatus() != AudioRecordStatus.AUDIO_RECORD_START) {
                     recordBtn.updateLayout(true, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
+                    AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_PREPARE);
                     AudioRecordManager.getInstance().setRecordSoundSizeListener(this);
                     AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_START);
                 }
@@ -187,7 +188,11 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
                     public void run() {
                         if ((currentX > borderWidth && distanceX > (borderWidth / 4.0)) || (endTime - startTime < RECORD_BORDER_TIME)) {
                             Log.d(TAG, "trigger record cancel");
-                            Toast.makeText(getContext(), "时间太短", Toast.LENGTH_LONG).show();
+                            if ((endTime - startTime < RECORD_BORDER_TIME)) {
+                                Toast.makeText(getContext(), "时间太短", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "已取消", Toast.LENGTH_LONG).show();
+                            }
                             AudioRecordManager.getInstance().setStatus(AudioRecordStatus.AUDIO_RECORD_CANCEL);
                         } else {
                             Log.d(TAG, "trigger record finish");

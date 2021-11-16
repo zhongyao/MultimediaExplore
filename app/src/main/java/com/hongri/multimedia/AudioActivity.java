@@ -125,7 +125,9 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                     case AUDIO_RECORD_STOP:
                         Log.d(TAG, "status ---> STATUS_STOP");
                         break;
-
+                    case AUDIO_RECORD_FINISH:
+                        Log.d(TAG, "status ---> STATUS_FINISH");
+                        break;
                     case AUDIO_RECORD_CANCEL:
                         Log.d(TAG, "status ---> STATUS_CANCEL");
                         break;

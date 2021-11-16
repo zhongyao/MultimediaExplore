@@ -1,5 +1,7 @@
 package com.hongri.multimedia.audio.mp3;
 
+import android.util.Log;
+
 import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
 import com.hongri.multimedia.util.Logger;
@@ -23,6 +25,7 @@ public class Mp3EncodeThread extends Thread {
     private FileOutputStream os;
     private byte[] mp3Buffer;
     private EncordFinishListener encordFinishListener;
+    private EncodeDeleteListener encodeDeleteListener;
 
     /**
      * 是否已停止录音
@@ -43,6 +46,10 @@ public class Mp3EncodeThread extends Thread {
         Logger.d(TAG, "format:%s，in_sampleRate:%s，getChannelCount:%s ，out_sampleRate：%s 位宽： %s,",
                 currentConfig.getFormat().getExtension(), sampleRate, currentConfig.getChannelCount(), sampleRate, currentConfig.getRealEncoding());
         Mp3Encoder.init(sampleRate, currentConfig.getChannelCount(), sampleRate, currentConfig.getRealEncoding());
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @Override
@@ -75,6 +82,13 @@ public class Mp3EncodeThread extends Thread {
         isOver = true;
         synchronized (this) {
             notify();
+        }
+    }
+
+    public void deleteSafe(EncodeDeleteListener encodeDeleteListener) {
+        this.encodeDeleteListener = encodeDeleteListener;
+        synchronized (this) {
+            delete();
         }
     }
 
@@ -133,6 +147,13 @@ public class Mp3EncodeThread extends Thread {
         }
     }
 
+    private void delete() {
+        if (file != null) {
+            boolean result = file.delete();
+            Log.d(TAG, "result:" + result);
+        }
+    }
+
     public static class ChangeBuffer {
         private short[] rawData;
         private int readSize;
@@ -156,5 +177,12 @@ public class Mp3EncodeThread extends Thread {
          * 格式转换完毕
          */
         void onFinish();
+    }
+
+    public interface EncodeDeleteListener {
+        /**
+         * 删除转码文件
+         */
+        void onDelete();
     }
 }
