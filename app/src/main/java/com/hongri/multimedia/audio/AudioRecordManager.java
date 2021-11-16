@@ -78,7 +78,7 @@ public class AudioRecordManager {
                 break;
 
             case AUDIO_RECORD_PREPARE:
-                AudioRecorder.getInstance().createDefaultAudio(FileUtil.getFilePath());
+                AudioRecorder.getInstance().createDefaultAudio();
                 break;
 
             case AUDIO_RECORD_START:

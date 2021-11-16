@@ -100,7 +100,7 @@ public class AudioRecorder {
 
     private AudioRecorder() {
         Log.d(TAG, "AudioRecorder");
-        createDefaultAudio("");
+        createDefaultAudio();
     }
 
     public void setRecordStateListener(RecordStateListener recordStateListener) {
@@ -140,15 +140,12 @@ public class AudioRecorder {
 
     /**
      * 创建默认的录音对象
-     *
-     * @param fileName 文件名
      */
-    public void createDefaultAudio(String fileName) {
+    public void createDefaultAudio() {
         // 获得缓冲区字节大小
         bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
                 AUDIO_CHANNEL, AUDIO_ENCODING);
         audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
-        this.fileName = fileName;
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_PREPARE;
     }
 
@@ -157,16 +154,11 @@ public class AudioRecorder {
      * 开始录音
      */
     public void startRecord() {
-        if (TextUtils.isEmpty(fileName)) {
-            fileName = FileUtil.getFilePath();
-        }
-        if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_IDLE) {
-//            throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
-        }
+        fileName = FileUtil.getFilePath();
         if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_START) {
-            throw new IllegalStateException("正在录音");
+            Log.d(TAG, "正在录音");
         }
-        Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
+        Log.d(TAG, "===startRecord===" + audioRecord.getState());
 
         resultFile = new File(fileName);
 
@@ -432,9 +424,9 @@ public class AudioRecorder {
      * 暂停录音
      */
     public void pauseRecord() {
-        Log.d("AudioRecorder", "===pauseRecord===");
+        Log.d(TAG, "===pauseRecord===");
         if (audioRecordStatus != AudioRecordStatus.AUDIO_RECORD_START) {
-            throw new IllegalStateException("没有在录音");
+            Log.d(TAG, "没有在录音");
         } else {
             audioRecord.stop();
             audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_PAUSE;
@@ -446,9 +438,9 @@ public class AudioRecorder {
      * 停止录音
      */
     public void stopRecord() {
-        Log.d("AudioRecorder", "===stopRecord===");
+        Log.d(TAG, "===stopRecord===");
         if (audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_IDLE || audioRecordStatus == AudioRecordStatus.AUDIO_RECORD_PREPARE) {
-            throw new IllegalStateException("录音尚未开始");
+            Log.d(TAG, "录音尚未开始");
         } else {
             audioRecord.stop();
             audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_STOP;
@@ -460,6 +452,7 @@ public class AudioRecorder {
      * 销毁(释放)录音实例
      */
     public void releaseRecord() {
+        Log.d(TAG, "===releaseRecord===");
         if (audioRecord != null) {
             audioRecord.release();
             audioRecord = null;
@@ -472,11 +465,11 @@ public class AudioRecorder {
      * 取消录音
      */
     public void cancelRecord() {
+        Log.d(TAG, "===cancelRecord===");
         if (audioRecord != null) {
             audioRecord.release();
             audioRecord = null;
         }
-
         audioRecordStatus = AudioRecordStatus.AUDIO_RECORD_CANCEL;
         notifyState();
     }
