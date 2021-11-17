@@ -158,6 +158,6 @@
         android:layout_gravity="center"
         android:background="@color/audio_record_selector_pressed_color"
         android:gravity="center"
-        android:text="听筒" />
+        android:text="扬声器" />
 
 </LinearLayout>

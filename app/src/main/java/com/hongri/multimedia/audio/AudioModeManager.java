@@ -44,7 +44,7 @@ public class AudioModeManager {
     private boolean isPlaying = false;
     private AudioManager audioManager;
     private final String AUDIO_PLAY_IS_SPEAKER_ON = "audio_play_is_speaker_on";
-    private boolean defaultIsOpenSpeaker = false;//默认听筒模式
+    private boolean defaultIsOpenSpeaker = true;//默认扬声器模式
     private PlayMode playMode = Speaker;
 
     public void init(Application application) {
@@ -53,7 +53,7 @@ public class AudioModeManager {
         }
         appContext = application;
         audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
-        setSpeakerOn(defaultIsOpenSpeaker);//设置默认是听筒模式
+        setSpeakerOn(defaultIsOpenSpeaker);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
