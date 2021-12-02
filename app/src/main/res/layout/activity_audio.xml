@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/audio_record_selector_pressed_color"
-        android:gravity="center"
+        android:gravity="left"
         android:text="扬声器" />
 
 </LinearLayout>

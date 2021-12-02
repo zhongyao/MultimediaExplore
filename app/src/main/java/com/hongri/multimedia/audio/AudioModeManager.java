@@ -1,30 +1,33 @@
 package com.hongri.multimedia.audio;
 
-import android.app.Application;
+import android.bluetooth.BluetoothHeadset;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.hongri.multimedia.audio.state.AudioPlayStatus;
 
 import java.util.Objects;
 
-import static com.hongri.multimedia.audio.AudioModeManager.PlayMode.*;
-import static com.hongri.multimedia.audio.AudioModeManager.PlayMode.Receiver;
-import static com.hongri.multimedia.audio.AudioModeManager.PlayMode.Speaker;
 
 /**
- * Create by zhongyao on 2021/11/11
+ * Create by zhongyao on 2021/11/16
  * Description: 音频播放模式
  */
 public class AudioModeManager {
 
+    private static final String TAG = "AudioModeManager";
     private Context appContext;
 
     private boolean isPauseMusic;
+    private boolean hasInitSuccess;
 
-    enum PlayMode {
+    public enum PlayMode {
         Speaker,//外放
         Headset,//耳机
         Receiver//听筒
@@ -39,44 +42,86 @@ public class AudioModeManager {
     }
 
     private AudioModeManager() {
+        Log.d(TAG, "AudioModeManager");
     }
 
     private boolean isPlaying = false;
     private AudioManager audioManager;
     private final String AUDIO_PLAY_IS_SPEAKER_ON = "audio_play_is_speaker_on";
     private boolean defaultIsOpenSpeaker = true;//默认扬声器模式
-    private PlayMode playMode = Speaker;
+    private PlayMode playMode = PlayMode.Speaker;
 
-    public void init(Application application) {
+    public void init(Context application) {
         if (application == null) {
             return;
         }
+
+        Log.d(TAG, "init ---> hasInitSuccess:" + hasInitSuccess);
+        if (hasInitSuccess) {
+            return;
+        }
+
         appContext = application;
         audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
         setSpeakerOn(defaultIsOpenSpeaker);
 
         IntentFilter intentFilter = new IntentFilter();
+        //监听优先耳机
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        //监听蓝牙耳机
+        intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
         //监听耳机的插拔
         appContext.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (Objects.requireNonNull(intent.getAction()).equals(Intent.ACTION_HEADSET_PLUG)) {
+
+                Log.d(TAG, "onReceive -- 耳机");
+                String action = intent.getAction();
+                if (Objects.requireNonNull(action).equals(Intent.ACTION_HEADSET_PLUG)) {
                     int state = intent.getIntExtra("state", 0);
+                    Log.d(TAG, "state:" + state);
                     if (state == 1) {
-                        playMode = Headset;
+                        Log.d(TAG, "有线耳机插入");
+                        playMode = PlayMode.Headset;
+                        changeMode(playMode);
                     } else if (state == 0) {
+                        Log.d(TAG, "有线耳机拔出");
                         if (isSpeakerOn()) {
-                            playMode = Speaker;
+                            playMode = PlayMode.Speaker;
                         } else {
-                            playMode = Receiver;
+                            playMode = PlayMode.Receiver;
                         }
+                        changeMode(playMode);
                     }
-                    changeMode(playMode);
+                } else if (action.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+                    //此处 有线/蓝牙拔出状态应该均能监听到
+                    Log.d(TAG, "有线耳机拔出");
+                } else if (action.equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)) {
+                    int state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1);
+                    switch (state) {
+                        case BluetoothProfile.STATE_CONNECTED:
+                            Log.d(TAG, "蓝牙耳机连接");
+                            playMode = PlayMode.Headset;
+                            changeMode(playMode);
+                            break;
+
+                        case BluetoothProfile.STATE_DISCONNECTED:
+                            Log.d(TAG, "蓝牙耳机断开");
+                            if (isSpeakerOn()) {
+                                playMode = PlayMode.Speaker;
+                            } else {
+                                playMode = PlayMode.Receiver;
+                            }
+                            changeMode(playMode);
+                            break;
+                    }
                 }
             }
 
         }, intentFilter);
+
+        hasInitSuccess = true;
     }
 
 
@@ -102,9 +147,9 @@ public class AudioModeManager {
 
         if (playMode != PlayMode.Headset) {
             if (isSpeaker) {
-                playMode = Speaker;
+                playMode = PlayMode.Speaker;
             } else {
-                playMode = Receiver;
+                playMode = PlayMode.Receiver;
             }
             changeMode(playMode);
         }
@@ -140,7 +185,9 @@ public class AudioModeManager {
      * 切换到耳机模式
      */
     private void changeToHeadset() {
-        audioManager.setSpeakerphoneOn(false);
+        if (audioManager != null) {
+            audioManager.setSpeakerphoneOn(false);
+        }
     }
 
     /**
@@ -148,14 +195,17 @@ public class AudioModeManager {
      * 切换到听筒
      */
     private void changeToReceiver() {
-        audioManager.setSpeakerphoneOn(false);
-        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        if (audioManager != null) {
+            audioManager.setSpeakerphoneOn(false);
+            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        }
     }
 
     /**
      * 更换模式
      */
-    public void changeMode(PlayMode playMode) {
+    private void changeMode(PlayMode playMode) {
+        Log.d(TAG, "changeMode:" + playMode);
 //        if (!isPlaying) {
 //            return;
 //        }
@@ -177,25 +227,29 @@ public class AudioModeManager {
      * （注：播放时切换到听筒模式 前1-2s 可能无声音 建议 在听筒模式下延迟1-2s播放）
      */
     public boolean isReceiver() {
-        return playMode == Receiver;
+        return playMode == PlayMode.Receiver;
     }
 
     /**
      * 播放时语音时 调用该方法 屏蔽第三方音乐 同时使当前播放模式生效
      */
     public void onPlay() {
-        isPlaying = true;
-        audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        changeMode(playMode);
+        if (audioManager != null) {
+            isPlaying = true;
+            audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            changeMode(playMode);
+        }
     }
 
     /**
      * 语音停止播放时 调用该方法 恢复第三方音乐播放  恢复播放模式
      */
     public void onStop() {
-        isPlaying = false;
-        audioManager.abandonAudioFocus(null);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
+        if (audioManager != null) {
+            isPlaying = false;
+            audioManager.abandonAudioFocus(null);
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+        }
     }
 
 

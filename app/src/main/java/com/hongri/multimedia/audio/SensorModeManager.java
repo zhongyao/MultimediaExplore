@@ -54,15 +54,15 @@ public class SensorModeManager implements SensorEventListener {
         if (AudioPlayManager.isPlaying()) {
             //音频正在播放
             if (value == sensor.getMaximumRange()) {
-                AudioModeManager.getInstance().changeMode(AudioModeManager.PlayMode.Speaker);
+                AudioModeManager.getInstance().setSpeakerOn(true);
                 setScreenOn();
             } else {
-                AudioModeManager.getInstance().changeMode(AudioModeManager.PlayMode.Receiver);
+                AudioModeManager.getInstance().setSpeakerOn(false);
                 setScreenOff();
             }
         } else {
             if (value == sensor.getMaximumRange()) {
-                AudioModeManager.getInstance().changeMode(AudioModeManager.PlayMode.Speaker);
+                AudioModeManager.getInstance().setSpeakerOn(true);
                 setScreenOn();
             }
         }
