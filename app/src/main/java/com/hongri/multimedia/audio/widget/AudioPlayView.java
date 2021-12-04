@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.AudioPlayer;
 import com.hongri.multimedia.audio.AudioPlayManager;
+import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.AudioPlayStatus;
 
 import java.util.HashMap;
@@ -187,6 +190,13 @@ public class AudioPlayView extends FrameLayout implements View.OnTouchListener {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (id == R.id.playIv) {
+
+                    audioUrl = AudioRecordManager.getInstance().getAudioPath();
+                    Log.d(TAG, "audioUrl:" + audioUrl);
+                    if (TextUtils.isEmpty(audioUrl)) {
+                        Toast.makeText(getContext(), "请先录制音频文件", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
                     audioPrepare(Uri.parse(audioUrl));
                     AudioPlayManager.setStatus(AudioPlayStatus.AUDIO_START);
                     return true;

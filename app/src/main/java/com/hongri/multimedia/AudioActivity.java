@@ -153,14 +153,21 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * 录音音频的相关配置
+     */
     private void initConfig() {
         recordConfig = new RecordConfig();
+        //采样位宽
         recordConfig.setEncodingConfig(AudioFormat.ENCODING_PCM_16BIT);
+        //录音格式
         recordConfig.setFormat(RecordConfig.RecordFormat.MP3);
 //        recordConfig.setFormat(RecordConfig.RecordFormat.WAV);
+        //采样频率
         recordConfig.setSampleRate(16000);
         String recordDir = String.format(Locale.getDefault(), "%s/Record/zhongyao/",
                 Environment.getExternalStorageDirectory().getAbsolutePath());
+        //存储目录
         recordConfig.setRecordDir(recordDir);
         AudioRecordManager.getInstance().setCurrentConfig(recordConfig);
     }

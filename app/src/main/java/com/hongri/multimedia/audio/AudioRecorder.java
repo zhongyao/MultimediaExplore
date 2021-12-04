@@ -497,6 +497,11 @@ public class AudioRecorder {
         notifyState();
     }
 
+    public String getAudioPath() {
+        return fileName;
+    }
+
+
     private void notifyState() {
         if (recordStateListener == null) {
             return;

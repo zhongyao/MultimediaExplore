@@ -108,4 +108,8 @@ public class AudioRecordManager {
     public AudioRecordStatus getStatus() {
         return AudioRecorder.getInstance().getAudioRecordStatus();
     }
+
+    public String getAudioPath() {
+        return AudioRecorder.getInstance().getAudioPath();
+    }
 }

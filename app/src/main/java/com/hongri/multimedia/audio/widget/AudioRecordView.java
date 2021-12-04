@@ -181,6 +181,8 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
             case MotionEvent.ACTION_UP:
                 isPressed = false;
                 handler.removeCallbacksAndMessages(null);
+                currentX = event.getX();
+                distanceX = currentX - lastTouchX;
                 recordTime = 0;
                 timeTv.setText("按住说话");
                 endTime = System.currentTimeMillis();
