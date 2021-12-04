@@ -9,7 +9,7 @@ import com.hongri.multimedia.video.state.VideoStatus;
 
 /**
  * Create by zhongyao on 2021/8/30
- * Description:
+ * Description: 视频播放器管理类
  */
 public class VideoPlayManager {
     private static final String TAG = "VideoPlayManager";

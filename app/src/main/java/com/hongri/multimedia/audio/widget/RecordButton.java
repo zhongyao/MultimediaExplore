@@ -14,7 +14,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 /**
  * Create by zhongyao on 2021/8/17
- * Description:
+ * Description: 录音按钮
  */
 public class RecordButton extends AppCompatButton {
 

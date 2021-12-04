@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * @author zhaolewei on 2018/7/3.
+ * @author zhongyao on 2021/11/3.
  *         pcm 转 wav 工具类
  *         http://soundfile.sapp.org/doc/WaveFormat/
  */

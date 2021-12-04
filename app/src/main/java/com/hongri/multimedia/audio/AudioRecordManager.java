@@ -10,7 +10,7 @@ import com.hongri.multimedia.audio.state.AudioRecordStatus;
 
 /**
  * Create by zhongyao on 2021/8/18
- * Description:
+ * Description:音频录制管理类
  */
 public class AudioRecordManager {
 

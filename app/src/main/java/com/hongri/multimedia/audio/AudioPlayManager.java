@@ -8,7 +8,7 @@ import android.util.Log;
 import com.hongri.multimedia.audio.state.AudioPlayStatus;
 /**
  * Create by zhongyao on 2021/8/30
- * Description:
+ * Description:音频播放管理类
  */
 public class AudioPlayManager {
 

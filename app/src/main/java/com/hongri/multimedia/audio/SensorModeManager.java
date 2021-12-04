@@ -14,7 +14,7 @@ import android.util.Log;
 import com.hongri.multimedia.audio.listener.AudioScreenListener;
 /**
  * Create by zhongyao on 2021/11/16
- * Description:感应 息屏/亮屏 模式
+ * Description:感应及息屏/亮屏 模式管理类
  */
 public class SensorModeManager implements SensorEventListener {
 

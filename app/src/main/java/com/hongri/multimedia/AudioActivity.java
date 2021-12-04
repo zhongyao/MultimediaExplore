@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 音频Activity：
+ * Create by zhongyao on 2021/9/8
+ * Description:音频Activity：
  * https://bbs.huaweicloud.com/blogs/239037
  */
 public class AudioActivity extends AppCompatActivity implements View.OnClickListener {

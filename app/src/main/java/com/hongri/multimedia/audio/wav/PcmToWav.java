@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Create by zhongyao on 2021/8/17
- * Description: 转码
+ * Description: pcm转码wav
  */
 public class PcmToWav {
     /**

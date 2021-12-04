@@ -19,11 +19,9 @@ import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.hongri.multimedia.R;
 import com.hongri.multimedia.video.VideoPlayer;
-
-
 /**
  * Create by zhongyao on 2021/9/8
- * Description:
+ * Description: 视频播放View
  */
 public class VideoPlayView extends ConstraintLayout {
     private final String TAG = "VideoView";

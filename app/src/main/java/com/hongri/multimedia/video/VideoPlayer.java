@@ -32,7 +32,7 @@ import com.hongri.multimedia.video.state.VideoStatus;
 
 /**
  * Create by zhongyao on 2021/9/8
- * Description:
+ * Description:视频播放器
  */
 public class VideoPlayer {
 

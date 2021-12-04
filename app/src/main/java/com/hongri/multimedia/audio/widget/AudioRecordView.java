@@ -26,7 +26,7 @@ import com.hongri.multimedia.util.DateUtil;
 
 /**
  * Create by zhongyao on 2021/8/17
- * Description:录音布局类
+ * Description:录音View
  */
 public class AudioRecordView extends FrameLayout implements RecordSoundSizeListener {
 

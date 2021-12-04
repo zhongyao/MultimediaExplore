@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * Create by zhongyao on 2021/9/8
+ * Description:Launch Activity：
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button audioBtn, videoBtn;

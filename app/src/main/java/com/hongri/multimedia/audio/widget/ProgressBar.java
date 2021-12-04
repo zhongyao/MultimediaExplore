@@ -16,7 +16,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 /**
  * Create by zhongyao on 2021/8/24
- * Description:
+ * Description: 音频播放进度条
  */
 public class ProgressBar extends AppCompatButton {
 

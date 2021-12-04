@@ -9,7 +9,7 @@ import java.util.Locale;
 
 /**
  * Create by zhongyao on 2021/8/30
- * Description:
+ * Description: 音频配置
  */
 public class RecordConfig implements Serializable {
 

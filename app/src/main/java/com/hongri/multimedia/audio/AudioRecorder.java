@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Create by zhongyao on 2021/8/17
- * Description: 录音封装
+ * Description: 音频录制Recorder
  */
 public class AudioRecorder {
     private static final String TAG = "AudioRecorder";
