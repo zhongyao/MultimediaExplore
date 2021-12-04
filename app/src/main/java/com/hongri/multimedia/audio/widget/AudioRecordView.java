@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hongri.multimedia.R;
 import com.hongri.multimedia.audio.listener.RecordSoundSizeListener;
 import com.hongri.multimedia.audio.AudioRecordManager;
 import com.hongri.multimedia.audio.state.RecordConfig;
@@ -167,11 +168,11 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
                 distanceX = currentX - lastTouchX;
 
                 if (currentX > borderWidth && distanceX > (borderWidth / 4.0)) {
-                    deleteBtn.setBackgroundColor(Color.parseColor("#FF0000"));
+                    deleteBtn.setBackgroundResource(R.drawable.audio_delete_pressed_bg);
                     timeTv.setText("松手取消发送");
                     isCancelRegion = true;
                 } else {
-                    deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    deleteBtn.setBackgroundResource(R.drawable.audio_delete_normal_bg);
                     isCancelRegion = false;
                 }
 
@@ -200,7 +201,7 @@ public class AudioRecordView extends FrameLayout implements RecordSoundSizeListe
                         }
 
                         recordBtn.updateLayout(false, recordBtnWidth / 2, recordBtnHeight / 2, recordBtnWidth / 3, recordBtnWidth / 3);
-                        deleteBtn.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        deleteBtn.setBackgroundResource(R.drawable.audio_delete_normal_bg);
                     }
                 }, 100);
 

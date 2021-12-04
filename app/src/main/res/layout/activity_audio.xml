@@ -86,9 +86,9 @@
             android:id="@+id/deleteBtn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_gravity="right|center_vertical"
+            android:layout_gravity="right|top"
+            android:layout_marginTop="80dp"
             android:layout_marginRight="20dp"
-            android:background="@color/white"
             android:padding="10dp"
             android:src="@drawable/audio_record_delete"
             tools:ignore="RtlHardcoded" />
@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/audio_record_selector_pressed_color"
-        android:gravity="left"
+        android:gravity="center"
         android:text="扬声器" />
 
 </LinearLayout>
