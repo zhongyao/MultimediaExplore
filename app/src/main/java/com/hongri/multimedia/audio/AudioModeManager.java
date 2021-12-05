@@ -173,12 +173,10 @@ public class AudioModeManager {
      * 切换到外放
      */
     private void changeToSpeaker() {
-        if (appContext == null) {
-            return;
+        if (audioManager != null) {
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(true);
         }
-        AudioManager audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(true);
     }
 
     /**

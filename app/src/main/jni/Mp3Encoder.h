@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 /*
- * Class:     com.zlw.main.recorderlib.recorder.mp3.Mp3Encoder
+ * Class:     com.hongri.multimedia.audio.mp3.Mp3Encoder
  * Method:    init
  */
 JNIEXPORT void JNICALL Java_com_hongri_multimedia_audio_mp3_Mp3Encoder_init

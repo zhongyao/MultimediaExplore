@@ -2,7 +2,7 @@ package com.hongri.multimedia.audio.mp3;
 
 /**
  * Create by zhongyao on 2021/8/30
- * Description:
+ * Description: MP3音频native编解码
  */
 public class Mp3Encoder {
 
