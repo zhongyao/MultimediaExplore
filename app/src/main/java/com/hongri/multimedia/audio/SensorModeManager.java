@@ -70,7 +70,9 @@ public class SensorModeManager implements SensorEventListener {
         hasInitSuccess = true;
     }
 
-
+    /**
+     * 唤屏 / 息屏广播监听者
+     */
     private BroadcastReceiver mScreenOReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -89,17 +91,19 @@ public class SensorModeManager implements SensorEventListener {
 
             }
         }
-
     };
 
+    /**
+     * 距离感应监听
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         float value = event.values[0];
 
         Log.d(TAG, "onSensorChanged ---> value:" + value);
 
-        //TODO 音频
-        if (/*AudioPlayManager.isPlaying()*/true) {
+        if (AudioPlayManager.isPlaying()) {
             //音频正在播放
             if (value == sensor.getMaximumRange()) {
                 AudioModeManager.getInstance().setSpeakerOn(true);
@@ -116,12 +120,18 @@ public class SensorModeManager implements SensorEventListener {
         }
     }
 
+    /**
+     * 设置亮屏时间
+     */
     private void setScreenOn() {
         if (wakeLock != null) {
-            wakeLock.acquire(10*60*1000L /*10 minutes*/);
+            wakeLock.acquire(10*60*1000L);
         }
     }
 
+    /**
+     * 设置息屏
+     */
     private void setScreenOff() {
         if (wakeLock != null) {
             wakeLock.setReferenceCounted(false);
