@@ -1,5 +1,6 @@
 package com.hongri.multimedia.audio;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
@@ -145,7 +146,7 @@ public class AudioModeManager {
         }
         PreferenceManager.getDefaultSharedPreferences(appContext).edit().putBoolean(AUDIO_PLAY_IS_SPEAKER_ON, isSpeaker).apply();
 
-        if (playMode != PlayMode.Headset) {
+        if (playMode != PlayMode.Headset && !isWiredHeadsetOn() && !isBlueToothHeadsetConnected()) {
             if (isSpeaker) {
                 playMode = PlayMode.Speaker;
             } else {
@@ -252,8 +253,7 @@ public class AudioModeManager {
 
 
     /**
-     * 耳机是否插入
-     *
+     * 耳机是否插入【有线耳机】
      * @return
      */
     public boolean isWiredHeadsetOn() {
@@ -261,5 +261,20 @@ public class AudioModeManager {
             return false;
         }
         return audioManager.isWiredHeadsetOn();
+    }
+
+    /**
+     * 耳机是否插入【蓝牙耳机】
+     * @return
+     */
+    public boolean isBlueToothHeadsetConnected() {
+        boolean result = true;
+        try {
+            result = BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET)
+                    != android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
+
+        } catch (Exception ignored) {
+        }
+        return result;
     }
 }
