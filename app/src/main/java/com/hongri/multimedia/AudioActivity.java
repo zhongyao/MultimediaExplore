@@ -59,6 +59,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
 
+
+
         phoneWidth = AppUtil.getPhoneWidth(this);
 
         start = findViewById(R.id.start);
